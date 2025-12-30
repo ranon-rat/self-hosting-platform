@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS project (
    is_paused bool NOT NULL default false
 );
 
-DELETE FROM projects;
+DELETE FROM project;
 
 CREATE TABLE IF NOT EXISTS execution_logs(
    ID INTEGER PRIMARY KEY,
