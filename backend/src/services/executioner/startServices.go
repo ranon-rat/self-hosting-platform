@@ -96,8 +96,8 @@ func Executioner(project *projectsD.Project) {
 	}
 	channel := make(chan string, executioner.MAX_CHANNEL_BUFFER)
 	OutputChannels.Set(project.ID, channel)
-	go OutReader(project.ID, stdout, channel)
-	go ErrReader(project.ID, stderr, channel)
+	go OutReader(project.ID, project.Name, stdout, channel)
+	go ErrReader(project.ID, project.Name, stderr, channel)
 	runningProjects.Set(project.ID, &executioner.RunningProject{
 		Cmd:    cmd,
 		Cancel: cancel,
@@ -118,12 +118,12 @@ func Executioner(project *projectsD.Project) {
 		}
 	}()
 }
-func OutReader(id int, buf io.ReadCloser, channel chan string) {
+func OutReader(id int, name string, buf io.ReadCloser, channel chan string) {
 	scanner := bufio.NewScanner(buf)
 	for scanner.Scan() {
 		// aqui podriamos decir
 		output := scanner.Text()
-		fmt.Println(output)
+		fmt.Println(name, output)
 		logRepo.Create(&executionlogs.NewLog{
 			IdProject: id,
 			Content:   output,
@@ -135,12 +135,12 @@ func OutReader(id int, buf io.ReadCloser, channel chan string) {
 	}
 }
 
-func ErrReader(id int, buf io.ReadCloser, channel chan string) {
+func ErrReader(id int, name string, buf io.ReadCloser, channel chan string) {
 	scanner := bufio.NewScanner(buf)
 	scanner.Buffer(make([]byte, 1024), 1024*1024)
 	for scanner.Scan() {
 		output := scanner.Text()
-		fmt.Println(output)
+		fmt.Println(name, output)
 		logRepo.Create(&executionlogs.NewLog{
 			IdProject: id,
 			Content:   output,
