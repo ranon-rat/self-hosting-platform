@@ -27,7 +27,7 @@ type UpdateProject struct {
 }
 
 type Project struct {
-	ID           int       `json:"id" db:"name"`
+	ID           int       `json:"id" db:"id"`
 	Name         string    `json:"name" db:"name"`
 	Dir          string    `json:"dir" db:"dir"`
 	Command      string    `json:"command" db:"command"`
