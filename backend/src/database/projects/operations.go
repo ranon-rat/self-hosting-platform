@@ -39,21 +39,16 @@ func (p Repository) Create(project *projectsD.NewProject) (int, error) {
 		:command,
 		:thumbnail_url
 	);
-    SELECT last_insert_rowid();
 	`
-	row, err := p.DB.NamedQuery(query, project)
+	result, err := p.DB.NamedExec(query, project)
 	if err != nil {
 		return 0, err
 	}
-	if !row.Next() {
-		return 0, fmt.Errorf("no id returned from insert")
-	}
-	var id int
-	err = row.Scan(&id)
+	id, err := result.LastInsertId()
 	if err != nil {
 		return 0, err
 	}
-	return id, nil
+	return int(id), nil
 
 }
 
