@@ -1,2 +1,4 @@
 .env
 .env.local
+db/database.db
+tmp
