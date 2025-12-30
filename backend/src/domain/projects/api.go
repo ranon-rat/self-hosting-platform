@@ -5,7 +5,7 @@ import "time"
 /*
 PRAGMA foreign_keys=ON;
 CREATE TABLE IF NOT EXISTS project (
-   ID INTEGER PRIMARY KEY,
+   id INTEGER PRIMARY KEY,
    name VARCHAR(255) NOT NULL DEFAULT '',
    dir TEXT NOT NULL DEFAULT '', -- con esto puedo saber el entorno para ejecutar
    command TEXT NOT NULL DEFAULT '', -- con esto lo empiezo a correr
