@@ -20,7 +20,7 @@ func main() {
 	}
 	repos.ProjectRepo.Create(&projectsD.NewProject{
 		Name:         "test",
-		Dir:          "~/",
+		Dir:          "/home/ranon-rat/Escritorio/proyectos/self-hosting-manager/backend",
 		Command:      "ping 1.1.1.1",
 		ThumbnailURL: "https://i.pinimg.com/736x/00/79/a9/0079a9a70d1f9fd429d3fbd44564afb9.jpg",
 	})
