@@ -7,12 +7,13 @@ import (
 	"regexp"
 	"strings"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/jmoiron/sqlx"
 )
 
 var db *sqlx.DB
 
-func Setup() {
+func Setup() {	
 	db = sqlx.MustConnect("sqlite3", "./db/database.db")
 	db.SetMaxOpenConns(40)
 	db.SetMaxIdleConns(15)
@@ -32,7 +33,6 @@ func readAndCleanComments() string {
 	}
 	content := string(contentBuffer)
 	// regex \/\*[a-z''A-Z0-9\-\>\s\.\n\t\,\;\_]+\*\/
-
 	re := regexp.MustCompile(`\/\*[\w\d''\-\>\s\n\\t.\,\;\:\_]+\*\/`)
 	matches := re.ReplaceAllString(content, "")
 	return strings.ReplaceAll(matches, "/**/", "")
