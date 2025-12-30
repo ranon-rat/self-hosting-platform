@@ -38,8 +38,8 @@ func (p Repository) Create(project *projectsD.NewProject) (int, error) {
 		:dir,
 		:command,
 		:thumbnail_url
-	)
-	RETURNING id
+	);
+    SELECT last_insert_rowid();
 	`
 	row, err := p.DB.NamedQuery(query, project)
 	if err != nil {
