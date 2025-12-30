@@ -23,9 +23,11 @@ func StartServices() {
 	projects, err := pRepo.Search("")
 	if err != nil {
 		log.Println(err) // deberia aqui de decir que hubo un error en este caso detendria todo?
+		return
 	}
 
 	for _, project := range projects {
+		fmt.Println("Starting project", project.Name)
 		Executioner(&project)
 	}
 
