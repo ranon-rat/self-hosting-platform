@@ -7,13 +7,13 @@ import (
 	"regexp"
 	"strings"
 
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var db *sqlx.DB
 
-func Setup() {	
+func Setup() {
 	db = sqlx.MustConnect("sqlite3", "./db/database.db")
 	db.SetMaxOpenConns(40)
 	db.SetMaxIdleConns(15)
