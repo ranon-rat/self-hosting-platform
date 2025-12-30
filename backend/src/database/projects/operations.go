@@ -26,7 +26,7 @@ FROM project p
 %s
 `
 
-func (p Repository) Create(project *projectsD.NewProject) error {
+func (p Repository) Create(project *projectsD.NewProject) (int, error) {
 	query := `
 	INSERT INTO project (
 		name,
@@ -39,9 +39,22 @@ func (p Repository) Create(project *projectsD.NewProject) error {
 		:command,
 		:thumbnail_url
 	)
+	RETURNING id
 	`
-	_, err := p.DB.NamedExec(query, project)
-	return err
+	row, err := p.DB.NamedQuery(query, project)
+	if err != nil {
+		return 0, err
+	}
+	if !row.Next() {
+		return 0, fmt.Errorf("no id returned from insert")
+	}
+	var id int
+	err = row.Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+
 }
 
 func (p Repository) UpdateProject(project *projectsD.UpdateProject) error {

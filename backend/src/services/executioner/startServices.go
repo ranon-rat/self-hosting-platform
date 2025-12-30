@@ -1,4 +1,4 @@
-package projectServices
+package executionerServices
 
 import (
 	"bufio"
@@ -30,7 +30,7 @@ func StartServices() {
 	}
 
 }
-func PauseProject(id int) error {
+func StopProject(id int) error {
 	if err := pRepo.PauseProject(true, id); err != nil {
 		return err
 	}
@@ -40,6 +40,22 @@ func PauseProject(id int) error {
 	}
 	cmd.Cancel()
 	return nil
+}
+func StartProject(id int) error {
+	if err := pRepo.PauseProject(false, id); err != nil {
+		return err
+	}
+	_, exists := runningProjects.Get(id)
+	if exists {
+		return nil
+	}
+	project, err := pRepo.GetByID(id)
+	if err != nil {
+		return err
+	}
+	Executioner(project)
+	return nil
+
 }
 func RestartProject(id int) error {
 	project, err := pRepo.GetByID(id)
@@ -107,6 +123,7 @@ func OutReader(id int, buf io.ReadCloser, channel chan string) {
 	for scanner.Scan() {
 		// aqui podriamos decir
 		output := scanner.Text()
+		fmt.Println(output)
 		logRepo.Create(&executionlogs.NewLog{
 			IdProject: id,
 			Content:   output,
@@ -123,6 +140,7 @@ func ErrReader(id int, buf io.ReadCloser, channel chan string) {
 	scanner.Buffer(make([]byte, 1024), 1024*1024)
 	for scanner.Scan() {
 		output := scanner.Text()
+		fmt.Println(output)
 		logRepo.Create(&executionlogs.NewLog{
 			IdProject: id,
 			Content:   output,

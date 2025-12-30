@@ -5,13 +5,28 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	projectsC "github.com/ranon-rat/self-hosting-manager/src/controllers/projects"
+	"github.com/ranon-rat/self-hosting-manager/src/controllers/public"
+	"github.com/ranon-rat/self-hosting-manager/src/domain/repositories"
+	"github.com/ranon-rat/self-hosting-manager/src/middleware"
 )
 
-func Setup() {
+func Setup(repos *repositories.Repositories) {
 	app := fiber.New()
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost:5173",
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization, Password",
+		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
+	}))
+	app.Use(middleware.BaseMiddleware())
+	// it just has one route that helps with the login
+	public.Setup(app)
+	//->/projects
+	projectsC.Setup(app, repos)
 	port := os.Getenv("PORT")
 	if port == "" {
-
 		port = "9239"
 	}
 	fmt.Println("starting service on port :", port)
