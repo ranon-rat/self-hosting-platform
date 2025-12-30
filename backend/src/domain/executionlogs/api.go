@@ -13,13 +13,13 @@ CREATE TABLE IF NOT EXISTS execution_logs(
 
 type NewLog struct {
 	IdProject int    `db:"id_project"`
-	content   string `db:"content"`
+	Content   string `db:"content"`
 }
 
 type Logs struct {
 	IdProject int       `db:"id_project" json:"id_project"`
-	content   string    `db:"content"`
-	createdAt time.Time `db:"created_at"`
+	Content   string    `db:"content" json:"content"`
+	CreatedAt time.Time `db:"created_at" json:"created_at"`
 }
 
 type PaginatedLogs struct {

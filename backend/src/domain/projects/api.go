@@ -1,4 +1,4 @@
-package projects
+package projectsD
 
 import "time"
 
@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS project (
    dir TEXT NOT NULL DEFAULT '', -- con esto puedo saber el entorno para ejecutar
    command TEXT NOT NULL DEFAULT '', -- con esto lo empiezo a correr
    thumbnail_url TEXT NOT NULL DEFAULT '',
-   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   is_paused bool NOT NULL default false
 );
 */
 
@@ -20,6 +21,10 @@ type NewProject struct {
 	Command      string `json:"command" db:"command"`
 	ThumbnailURL string `json:"thumbnail_url" db:"thumbnail_url"`
 }
+type UpdateProject struct {
+	NewProject
+	ID int `json:"id" db:"id"`
+}
 
 type Project struct {
 	ID           int       `json:"id" db:"name"`
@@ -28,4 +33,5 @@ type Project struct {
 	Command      string    `json:"command" db:"command"`
 	ThumbnailURL string    `json:"thumbnail_url" db:"thumbnail_url"`
 	CreatedAt    time.Time `json:"created_at" db:"created_at"`
+	IsPaused     bool      `json:"is_paused" db:"is_paused"`
 }
