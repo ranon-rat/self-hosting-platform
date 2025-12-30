@@ -11,8 +11,6 @@ CREATE TABLE IF NOT EXISTS project (
    is_paused bool NOT NULL default false
 );
 
-DELETE FROM project;
-
 CREATE TABLE IF NOT EXISTS execution_logs(
    id INTEGER PRIMARY KEY,
    id_project INTEGER NOT NULL REFERENCES PROJECT(id) ON DELETE CASCADE,

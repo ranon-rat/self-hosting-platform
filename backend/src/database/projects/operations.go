@@ -80,7 +80,7 @@ func (p Repository) GetByID(id int) (*projectsD.Project, error) {
 func (p Repository) Search(search string) ([]projectsD.Project, error) {
 	query := fmt.Sprintf(BaseSelectProjectQuery, "WHERE LOWER(p.name) LIKE LOWER(?1) ")
 	projects := []projectsD.Project{}
-	err := p.DB.Select(&projects, query, search)
+	err := p.DB.Select(&projects, query, "%"+search+"%")
 	return projects, err
 }
 func (p Repository) PauseProject(pause bool, id int) error {
