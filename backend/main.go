@@ -20,7 +20,7 @@ func main() {
 		ProjectRepo: projectsDB.NewRepo(database.GetDB()),
 		LogRepo:     executionlogsDB.NewRepo(database.GetDB()),
 	}
-	_, err := repos.ProjectRepo.Create(&projectsD.NewProject{
+	id, err := repos.ProjectRepo.Create(&projectsD.NewProject{
 		Name:         "test",
 		Dir:          "/home/ranon-rat/Escritorio/proyectos/self-hosting-manager/backend",
 		Command:      "ping 1.1.1.1",
@@ -29,6 +29,11 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	project, err := repos.ProjectRepo.GetByID(id)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(id, project.Name)
 	executionerServices.Setup(&repos)
 	executionerServices.StartServices()
 	router.Setup(&repos)
