@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,6 +14,7 @@ func Setup() {
 
 		port = "9239"
 	}
+	fmt.Println("starting service on port :", port)
 	app.Listen(":" + port)
 
 }
