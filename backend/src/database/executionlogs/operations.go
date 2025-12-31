@@ -31,13 +31,13 @@ func (r Repository) Create(log *executionlogs.NewLog) error {
 }
 
 // creo que esto deberia de funcionar?
-func (r Repository) Get(firstID int) ([]executionlogs.Logs, error) {
+func (r Repository) Get(oldId int) ([]executionlogs.Logs, error) {
 	logs := []executionlogs.Logs{}
 	query := baseSelectLogQuery
 	args := []any{}
-	if firstID != 0 {
+	if oldId != 0 {
 		query += ` WHERE el.id < ?`
-		args = append(args, firstID)
+		args = append(args, oldId)
 	}
 	query += ` ORDER BY el.id DESC LIMIT ?`
 	args = append(args, domain.LIMIT_PAGE)

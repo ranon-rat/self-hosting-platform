@@ -14,10 +14,10 @@ import (
 	projectsD "github.com/ranon-rat/self-hosting-manager/src/domain/projects"
 )
 
-var runningProjects domain.SecureMap[int, *executioner.RunningProject]
+var runningProjects = domain.NewSecureMap[int, *executioner.RunningProject]()
 
 // esto es util para el futuro websocket
-var OutputChannels domain.SecureMap[int, chan string]
+var OutputChannels = domain.NewSecureMap[int, chan string]()
 
 func StartServices() {
 	projects, err := pRepo.Search("")
