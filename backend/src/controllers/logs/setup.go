@@ -14,7 +14,7 @@ var connectionsTunnels = domain.NewSecureMap[int, *domain.SecureMap[*websocket.C
 var logRepo executionlogs.ExecutionLogsRepoDB
 var pRepo projectsD.ProjectsRepoDB
 
-func Setup(app *fiber.App, repos repositories.Repositories) {
+func Setup(app *fiber.App, repos *repositories.Repositories) {
 	logRepo = repos.LogRepo
 	pRepo = repos.ProjectRepo
 
