@@ -1,4 +1,4 @@
-import { Login } from "./api/public"
+import { Login } from "./api/public.js"
 
 window.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("login-form")
@@ -46,7 +46,9 @@ window.addEventListener("DOMContentLoaded", () => {
         
         localStorage.setItem("password", passwordInput.value)
         try {
+
             await Login(passwordInput.value)
+            debugger
             window.location.href = "/index.html"
         } catch (error) {
             localStorage.removeItem("password")

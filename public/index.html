@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,13 +8,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
     </style>
 </head>
+
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900">
+
+    <a href="/createproject.html"> <button id="create-project-button"
+            class="bg-blue-500 text-white px-4 py-2 rounded-md">Create Project</button></a>
+    </a>
     <div id="app" class="container mx-auto px-4 py-8">
         <!-- Content will be rendered here -->
     </div>
-    <script src="dist/index.js" type="module"></script>
+    <script src="dist/loadprojects.js" type="module"></script>
+    <!--i want to have the map avaible-->>
+    <script src="dist/loadprojects.d.ts.map"></script>
 </body>
+
 </html>

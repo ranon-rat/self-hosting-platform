@@ -13,7 +13,7 @@ func Setup(app *fiber.App, repos *repositories.Repositories) {
 	group := app.Group("/projects")
 	group.Post("/", POSTCreateProject)
 	group.Put("/", PUTProjects)
-	group.Put("/projects/pause", PauseProject)
-	group.Get("/projects/by-id", GetByID)
+	group.Put("/pause", PauseProject)
+	group.Get("/by-id", GetByID)
 	group.Get("/", SearchProject)
 }

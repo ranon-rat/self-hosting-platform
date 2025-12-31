@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	logsC "github.com/ranon-rat/self-hosting-manager/src/controllers/logs"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	projectsC "github.com/ranon-rat/self-hosting-manager/src/controllers/projects"
 	"github.com/ranon-rat/self-hosting-manager/src/controllers/public"
 	"github.com/ranon-rat/self-hosting-manager/src/domain/repositories"
@@ -15,12 +16,14 @@ import (
 
 func Setup(repos *repositories.Repositories) {
 	app := fiber.New()
-
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "http://localhost:5173",
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization, Password",
 		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
 	}))
+	app.Use(logger.New(logger.Config{
+		Format: "${time} | ${status} | ${latency} | ${method} | ${path}?${queryParams} | ${body}\n",
+	})) //
 	app.Static("/", "./public")
 	//
 	app.Use(middleware.BaseMiddleware())

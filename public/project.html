@@ -11,9 +11,40 @@
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900">
-    <div id="app" class="container mx-auto px-4 py-8">
-        <!-- Content will be rendered here -->
+    <div id="app" class="container mx-auto px-4 py-8 space-y-6">
+        <div class="flex items-center justify-between mb-6">
+            <a href="/index.html" class="text-indigo-400 hover:text-indigo-300 transition-colors">
+                ← Back to Projects
+            </a>
+        </div>
+        
+        <div id="project-details">
+            <!--project details should be rendered here-->
+        </div>
+        
+        <div id="project-buttons" class="flex gap-4">
+            <!--if the project is paused, show the resume button, otherwise show the pause button-->
+            <button 
+                id="pause-project-button" 
+                class="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-yellow-500/50"
+            >
+                ⏸ Pause Project
+            </button>
+            <button 
+                id="resume-project-button" 
+                class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-green-500/50 hidden"
+            >
+                ▶ Resume Project
+            </button>
+            <!--there is no such thing as deleting a project, but you can pause it-->
+        </div>
+
+        <div id="project-logs" class="bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-8">
+            <h2 class="text-2xl font-bold text-white mb-4">Project Logs</h2>
+            <!--project logs should be rendered here-->
+            <!--also the logs are projected in real time, at the top there should be a button to -->
+        </div>
     </div>
-    <script src="dist/project.js" type="module"></script>
+    <script src="dist/loadproject.js" type="module"></script>
 </body>
 </html>
