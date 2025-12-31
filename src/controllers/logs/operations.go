@@ -87,7 +87,10 @@ func Messager(id int) {
 		}
 
 		connections.Range(func(conn *websocket.Conn, _ bool) bool {
-			if err := conn.WriteJSON(fiber.Map{"content": out}); err != nil {
+			if err := conn.WriteJSON(executionlogs.LogMessage{
+				Content: out,
+				IDProject: id,
+			}); err != nil {
 				conn.Close()
 				connections.Delete(conn)
 			}

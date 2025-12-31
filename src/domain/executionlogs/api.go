@@ -22,6 +22,11 @@ type Logs struct {
 	Content   string    `db:"content" json:"content"`
 	CreatedAt time.Time `db:"created_at" json:"created_at"`
 }
+type LogMessage struct {
+	Content string `json:"content"`
+	IDProject int    `json:"id_project"`
+
+}
 
 type PaginatedLogs struct {
 	HasMore bool `json:"has_more"`

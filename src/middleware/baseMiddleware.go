@@ -9,8 +9,11 @@ import (
 func BaseMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		auth := c.Get("Password")
+		if auth == "" {
+			auth = c.Query("password")
+		}
 		if auth != os.Getenv("PASSWORD") {
-			return c.Status(fiber.ErrUnauthorized.Code).JSON(fiber.Map{
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"message": "wrong password",
 			})
 		}
