@@ -21,6 +21,8 @@ func Setup(repos *repositories.Repositories) {
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization, Password",
 		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
 	}))
+	app.Static("/", "./public")
+	//
 	app.Use(middleware.BaseMiddleware())
 	// it just has one route that helps with the login
 	public.Setup(app)
@@ -33,7 +35,7 @@ func Setup(repos *repositories.Repositories) {
 	if port == "" {
 		port = "9239"
 	}
-	fmt.Println("starting service on port :", port)
+	fmt.Printf("starting service on port :%s", port)
 	app.Listen(":" + port)
 
 }

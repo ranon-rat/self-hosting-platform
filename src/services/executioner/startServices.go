@@ -142,6 +142,7 @@ func ErrReader(id int, name string, buf io.ReadCloser, channel chan string) {
 	scanner.Buffer(make([]byte, 1024), 1024*1024)
 	for scanner.Scan() {
 		output := scanner.Text()
+		// i just want to know what is happening this is for testing
 		fmt.Println(name, output)
 		logRepo.Create(&executionlogs.NewLog{
 			IdProject: id,
