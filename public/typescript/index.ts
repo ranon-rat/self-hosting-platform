@@ -1,2 +1,2 @@
-import { Test } from "./types";
+import { Test } from "./types.js";
 Test();
