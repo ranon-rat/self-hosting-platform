@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os/exec"
+	"strings"
 
 	"github.com/ranon-rat/self-hosting-manager/src/domain"
 	"github.com/ranon-rat/self-hosting-manager/src/domain/executioner"
@@ -25,9 +26,14 @@ func StartServices() {
 		log.Println(err) // deberia aqui de decir que hubo un error en este caso detendria todo?
 		return
 	}
+	divider := strings.Repeat("-", 50)
+	fmt.Println(divider)
 
 	for _, project := range projects {
 		fmt.Println("Starting project", project.Name)
+		fmt.Println("dir:\n", project.Dir)
+		fmt.Println("command:", project.Command)
+		fmt.Println(divider)
 		Executioner(&project)
 	}
 
@@ -75,6 +81,7 @@ func RestartProject(id int) error {
 	Executioner(project)
 	return nil
 }
+
 func Executioner(project *projectsD.Project) {
 	if project.IsPaused {
 		return
@@ -83,10 +90,9 @@ func Executioner(project *projectsD.Project) {
 		rp.Cancel()
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-    command := fmt.Sprintf("cd \"%s\" && ", project.Dir)+project.Command
-	fmt.Println(command)
-	cmd := exec.CommandContext(ctx, "bash", "-lc", command)
+	cmd := exec.CommandContext(ctx, "bash", "-lc", project.Command)
 	cmd.Dir = project.Dir
+	cmd.Env = executableEnv
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		cancel()
@@ -97,7 +103,7 @@ func Executioner(project *projectsD.Project) {
 		cancel()
 		return
 	}
-	channel ,exist:=OutputChannels.Get(project.ID)
+	channel, exist := OutputChannels.Get(project.ID)
 	if !exist {
 		channel = make(chan string, executioner.MAX_CHANNEL_BUFFER)
 		OutputChannels.Set(project.ID, channel)

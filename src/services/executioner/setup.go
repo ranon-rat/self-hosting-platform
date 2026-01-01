@@ -8,8 +8,10 @@ import (
 
 var pRepo projectsD.ProjectsRepoDB
 var logRepo executionlogs.ExecutionLogsRepoDB
+var executableEnv = []string{}
 
 func Setup(repos *repositories.Repositories) {
+	executableEnv = LoadLocalEnviroments()
 	pRepo = repos.ProjectRepo
 	logRepo = repos.LogRepo
 	StartServices()
