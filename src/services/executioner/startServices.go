@@ -121,6 +121,11 @@ func Executioner(project *projectsD.Project) {
 	}()
 }
 func OutReader(id int, name string, buf io.ReadCloser, channel chan string) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Recovered from panic in ErrReader for %s: %v\n", name, r)
+		}
+	}()
 	scanner := bufio.NewScanner(buf)
 	for scanner.Scan() {
 		// aqui podriamos decir
@@ -138,6 +143,11 @@ func OutReader(id int, name string, buf io.ReadCloser, channel chan string) {
 }
 
 func ErrReader(id int, name string, buf io.ReadCloser, channel chan string) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Recovered from panic in ErrReader for %s: %v\n", name, r)
+		}
+	}()
 	scanner := bufio.NewScanner(buf)
 	scanner.Buffer(make([]byte, 1024), 1024*1024)
 	for scanner.Scan() {
