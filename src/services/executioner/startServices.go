@@ -83,8 +83,9 @@ func Executioner(project *projectsD.Project) {
 		rp.Cancel()
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-
-	cmd := exec.CommandContext(ctx, "bash", "-lc", fmt.Sprintf("cd \"%s\";", project.Dir)+project.Command)
+    command := fmt.Sprintf("cd \"%s\" && ", project.Dir)+project.Command
+	fmt.Println(command)
+	cmd := exec.CommandContext(ctx, "bash", "-lc", command)
 	cmd.Dir = project.Dir
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -96,7 +97,11 @@ func Executioner(project *projectsD.Project) {
 		cancel()
 		return
 	}
-	channel := make(chan string, executioner.MAX_CHANNEL_BUFFER)
+	channel ,exist:=OutputChannels.Get(project.ID)
+	if !exist {
+		channel = make(chan string, executioner.MAX_CHANNEL_BUFFER)
+		OutputChannels.Set(project.ID, channel)
+	}
 	OutputChannels.Set(project.ID, channel)
 	go OutReader(project.ID, project.Name, stdout, channel)
 	go ErrReader(project.ID, project.Name, stderr, channel)
@@ -107,12 +112,12 @@ func Executioner(project *projectsD.Project) {
 
 	cmd.Start()
 	go func() {
-		defer close(channel)
 		err := cmd.Wait()
 		OutputChannels.Delete(project.ID)
 		runningProjects.Delete(project.ID)
 
 		if ctx.Err() == context.Canceled {
+			close(channel)
 			return
 		}
 		if err != nil {
