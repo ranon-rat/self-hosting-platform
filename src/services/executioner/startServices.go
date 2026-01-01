@@ -132,6 +132,7 @@ func Executioner(project *projectsD.Project) {
 	}()
 }
 func OutReader(id int, name string, buf io.ReadCloser, channel chan string) {
+
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("Recovered from panic in ErrReader for %s: %v\n", name, r)
