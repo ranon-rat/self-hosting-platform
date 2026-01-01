@@ -14,7 +14,7 @@ import (
 var db *sqlx.DB
 
 func Setup() {
-	db = sqlx.MustConnect("sqlite3", "./db/database.db")
+	db = sqlx.MustConnect("sqlite3", "file:db/database.db?_foreign_keys=on")
 	db.SetMaxOpenConns(40)
 	db.SetMaxIdleConns(15)
 	content := readAndCleanComments()

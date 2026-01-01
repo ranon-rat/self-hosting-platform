@@ -1,5 +1,5 @@
 PRAGMA foreign_keys=ON;
-
+drop table execution_logs;
 CREATE TABLE IF NOT EXISTS project (
    id INTEGER PRIMARY KEY,
    name VARCHAR(255) NOT NULL DEFAULT '' UNIQUE,
@@ -10,9 +10,12 @@ CREATE TABLE IF NOT EXISTS project (
    is_paused bool NOT NULL default false
 );
 
-CREATE TABLE IF NOT EXISTS execution_logs(
+CREATE TABLE IF NOT EXISTS execution_logs (
    id INTEGER PRIMARY KEY,
-   id_project INTEGER NOT NULL REFERENCES PROJECT(id) ON DELETE CASCADE,
+   id_project INTEGER NOT NULL,
    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-   content TEXT NOT NULL DEFAULT ''
+   content TEXT NOT NULL DEFAULT '',
+   FOREIGN KEY (id_project)
+     REFERENCES project(id)
+     ON DELETE CASCADE
 );
