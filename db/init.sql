@@ -1,5 +1,4 @@
 PRAGMA foreign_keys=ON;
-drop table execution_logs;
 CREATE TABLE IF NOT EXISTS project (
    id INTEGER PRIMARY KEY,
    name VARCHAR(255) NOT NULL DEFAULT '' UNIQUE,

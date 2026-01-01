@@ -1,7 +1,6 @@
 package executionerServices
 
 import (
-	"fmt"
 	"os"
 	"slices"
 	"strings"
@@ -16,6 +15,5 @@ func LoadLocalEnviroments() []string {
 		}
 		envs = append(envs, env)
 	}
-	fmt.Println(envs)
 	return envs
 }
