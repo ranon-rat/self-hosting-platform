@@ -12,4 +12,6 @@ var logRepo executionlogs.ExecutionLogsRepoDB
 func Setup(repos *repositories.Repositories) {
 	pRepo = repos.ProjectRepo
 	logRepo = repos.LogRepo
+	executionerServices.StartServices()
+	go DeletingOldShit()
 }

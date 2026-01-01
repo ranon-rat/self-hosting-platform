@@ -18,6 +18,5 @@ func main() {
 		LogRepo:     executionlogsDB.NewRepo(database.GetDB()),
 	}
 	executionerServices.Setup(&repos)
-	executionerServices.StartServices()
 	router.Setup(&repos)
 }

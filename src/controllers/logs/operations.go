@@ -46,13 +46,18 @@ func WebsocketConn(c *websocket.Conn) {
 		c.Close()
 		return
 	}
+	createNew := false 
 	connections, exist := connectionsTunnels.Get(id)
 	if !exist {
 		connections = domain.NewSecureMap[*websocket.Conn, bool]()
 		connectionsTunnels.Set(id, connections)
+		createNew = true
 	}
 	connections.Set(c, true)
 	defer connections.Delete(c)
+	if createNew {
+		go Messager(id)
+	}
 	for {
 		// aqui me da igual esto
 		if _, _, err := c.ReadMessage(); err != nil {
