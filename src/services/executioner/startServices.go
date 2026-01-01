@@ -141,7 +141,7 @@ func OutReader(id int, name string, buf io.ReadCloser, channel chan string) {
 	for scanner.Scan() {
 		// aqui podriamos decir
 		output := scanner.Text()
-		fmt.Println(name, output)
+		//	fmt.Println(name, output)
 		logRepo.Create(&executionlogs.NewLog{
 			IdProject: id,
 			Content:   output,
@@ -164,7 +164,7 @@ func ErrReader(id int, name string, buf io.ReadCloser, channel chan string) {
 	for scanner.Scan() {
 		output := scanner.Text()
 		// i just want to know what is happening this is for testing
-		fmt.Println(name, output)
+		//		fmt.Println(name, output)
 		logRepo.Create(&executionlogs.NewLog{
 			IdProject: id,
 			Content:   output,
