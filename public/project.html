@@ -25,6 +25,12 @@
         <div id="project-buttons" class="flex gap-4">
             <!--if the project is paused, show the resume button, otherwise show the pause button-->
             <button 
+                id="edit-project-button" 
+                class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-blue-500/50"
+            >
+                ✏️ Edit Project
+            </button>
+            <button 
                 id="pause-project-button" 
                 class="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-yellow-500/50"
             >
@@ -40,11 +46,25 @@
         </div>
 
         <div id="project-logs" class="bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-8">
-            <h2 class="text-2xl font-bold text-white mb-4">Project Logs</h2>
-            <!--project logs should be rendered here-->
-            <!--also the logs are projected in real time, at the top there should be a button to -->
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-white">Project Logs</h2>
+                <button 
+                    id="more-logs-button" 
+                    class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-blue-500/50"
+                >
+                    📜 Load More Logs
+                </button>
+            </div>
+            <div 
+                id="project-logs-container" 
+                class="bg-slate-900/50 rounded-lg p-4 font-mono text-sm text-green-400 max-h-96 overflow-y-auto space-y-1"
+                style="scrollbar-width: thin; scrollbar-color: rgba(148, 163, 184, 0.5) transparent;"
+            >
+                <!--project logs should be rendered here-->
+            </div>
         </div>
     </div>
     <script src="dist/loadproject.js" type="module"></script>
+    <script src="dist/loggerLoader.js" type="module"></script>
 </body>
 </html>

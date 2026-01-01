@@ -45,3 +45,10 @@ func (r Repository) Get(oldId int) ([]executionlogs.Logs, error) {
 	err := r.DB.Select(&logs, query, args...)
 	return logs, err
 }
+func (r Repository) DeleteOldMessages(days int) error {
+	query := `
+	DELETE FROM execution_logs WHERE created_at < ?
+	`
+	_, err := r.DB.Exec(query, time.Now().AddDate(0, 0, -days))
+	return err
+}

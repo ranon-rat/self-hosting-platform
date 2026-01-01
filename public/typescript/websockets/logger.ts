@@ -15,6 +15,7 @@ export function createLoggerWebSocket(idProject: number, onMessage: (data: LogMe
 
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data) as LogMessage
+        console.log(data)
         onMessage(data)
     }
 
