@@ -46,18 +46,15 @@ func WebsocketConn(c *websocket.Conn) {
 		c.Close()
 		return
 	}
-	createNew := false 
 	connections, exist := connectionsTunnels.Get(id)
 	if !exist {
 		connections = domain.NewSecureMap[*websocket.Conn, bool]()
 		connectionsTunnels.Set(id, connections)
-		createNew = true
+		go Messager(id)
+
 	}
 	connections.Set(c, true)
 	defer connections.Delete(c)
-	if createNew {
-		go Messager(id)
-	}
 	for {
 		// aqui me da igual esto
 		if _, _, err := c.ReadMessage(); err != nil {
@@ -93,7 +90,7 @@ func Messager(id int) {
 
 		connections.Range(func(conn *websocket.Conn, _ bool) bool {
 			if err := conn.WriteJSON(executionlogs.LogMessage{
-				Content: out,
+				Content:   out,
 				IDProject: id,
 			}); err != nil {
 				conn.Close()

@@ -84,7 +84,7 @@ func Executioner(project *projectsD.Project) {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 
-	cmd := exec.CommandContext(ctx, "bash", "-c", project.Command)
+	cmd := exec.CommandContext(ctx, "bash", "-lc", project.Command)
 	cmd.Dir = project.Dir
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
