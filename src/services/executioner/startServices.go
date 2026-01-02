@@ -133,17 +133,21 @@ func Executioner(project *projectsD.Project) {
 		runningProjects.Delete(project.ID)
 		wg.Wait()
 		lastErrStr := strings.ToLower(lastErrOutput.Content())
+		fmt.Println(lastErrStr)
 		if ctx.Err() == context.Canceled {
 			SaveAndSend(channel, err.Error(), project.ID)
 			goto justClean
 		}
-		if err != nil || lastErrOutput.Content() != "" {
+		if err != nil {
 			SaveAndSend(channel, err.Error(), project.ID)
-
-			if strings.Contains(strings.ToLower(err.Error()), "bind") || strings.Contains(lastErrStr, "bind") {
+			if strings.Contains(strings.ToLower(err.Error()), "bind") {
 				log.Println("Port already in use, not restarting", project.Name)
 				goto justClean
 			}
+		}
+		if strings.Contains(lastErrStr, "bind") {
+			log.Println("Port already in use, not restarting", project.Name)
+			goto justClean
 		}
 		close(channel)
 		OutputChannels.Delete(project.ID)
