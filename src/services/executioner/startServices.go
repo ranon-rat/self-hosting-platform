@@ -49,7 +49,6 @@ func StopProject(id int) error {
 	}
 	// Primero cancela el contexto (cierre gracioso)
 	cmd.Cancel()
-	_ = cmd.Cmd.Wait() // BLOQUEANTE
 	runningProjects.Delete(id)
 	return nil
 }
@@ -88,7 +87,6 @@ func Executioner(project *projectsD.Project) {
 	}
 	if rp, e := runningProjects.Get(project.ID); e {
 		rp.Cancel()
-		rp.Cmd.Wait() // BLOQUEANTE
 		runningProjects.Delete(project.ID)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
@@ -130,21 +128,22 @@ func Executioner(project *projectsD.Project) {
 		err := cmd.Wait()
 		runningProjects.Delete(project.ID)
 		wg.Wait()
-		defer close(channel)
-		defer OutputChannels.Delete(project.ID)
+
 		if ctx.Err() == context.Canceled {
 			SaveAndSend(channel, err.Error(), project.ID)
-			return
+			goto end
 		}
 		if err != nil {
 			SaveAndSend(channel, err.Error(), project.ID)
 			if strings.Contains(strings.ToLower(err.Error()), "bind") {
 				log.Println("Port already in use, not restarting", project.Name)
-				return
+				goto end
 			}
 		}
 		RestartProject(project.ID)
-
+	end:
+		close(channel)
+		OutputChannels.Delete(project.ID)
 	}()
 }
 func OutReader(id int, name string, buf io.ReadCloser, channel chan string) {
