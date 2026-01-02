@@ -97,7 +97,6 @@ func Executioner(project *projectsD.Project) {
 	cmd := exec.CommandContext(ctx, "bash", "-lc" /*"trap 'kill 0' SIGTERM; "+*/, project.Command)
 	cmd.Dir = project.Dir
 	cmd.Env = executableEnv
-
 	setSysProcAttr(cmd)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -109,8 +108,11 @@ func Executioner(project *projectsD.Project) {
 		cancel()
 		return
 	}
-	channel := make(chan string, executioner.MAX_CHANNEL_BUFFER)
-	OutputChannels.Set(project.ID, channel)
+	channel, exists := OutputChannels.Get(project.ID)
+	if !exists {
+		channel = make(chan string, executioner.MAX_CHANNEL_BUFFER)
+		OutputChannels.Set(project.ID, channel)
+	}
 	lastErrOutput := domain.NewSecureStrContainer(50)
 	wg := sync.WaitGroup{}
 	wg.Add(2)
@@ -152,8 +154,6 @@ func Executioner(project *projectsD.Project) {
 			log.Println("Port already in use, not restarting", project.Name)
 			goto justClean
 		}
-		close(channel)
-		OutputChannels.Delete(project.ID)
 		RestartProject(project.ID)
 		return
 	justClean:
