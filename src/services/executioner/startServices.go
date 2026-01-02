@@ -91,7 +91,7 @@ func Executioner(project *projectsD.Project) {
 		runningProjects.Delete(project.ID)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	cmd := exec.CommandContext(ctx, "bash", "-lc", "trap 'kill 0' SIGTERM;"+project.Command)
+	cmd := exec.CommandContext(ctx, "bash", "-lc" /*"trap 'kill 0' SIGTERM; "+*/, project.Command)
 	cmd.Dir = project.Dir
 	cmd.Env = executableEnv
 
@@ -101,16 +101,23 @@ func Executioner(project *projectsD.Project) {
 		cancel()
 		return
 	}
-
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		cancel()
+		return
+	}
 	channel := make(chan string, executioner.MAX_CHANNEL_BUFFER)
 	OutputChannels.Set(project.ID, channel)
 	wg := sync.WaitGroup{}
-	wg.Add(1)
+	wg.Add(2)
 	go func() {
 		OutReader(project.ID, project.Name, stdout, channel)
 		wg.Done()
 	}()
-
+	go func() {
+		ErrReader(project.ID, project.Name, stderr, channel)
+		wg.Done()
+	}()
 	runningProjects.Set(project.ID, &executioner.RunningProject{
 		Cmd:    cmd,
 		Cancel: cancel,
@@ -125,13 +132,10 @@ func Executioner(project *projectsD.Project) {
 		runningProjects.Delete(project.ID)
 		wg.Wait()
 		if ctx.Err() == context.Canceled {
-			fmt.Println(err)
-
 			SaveAndSend(channel, err.Error(), project.ID)
 			goto justClean
 		}
 		if err != nil {
-			fmt.Println(err)
 			SaveAndSend(channel, err.Error(), project.ID)
 			if strings.Contains(strings.ToLower(err.Error()), "bind") {
 				log.Println("Port already in use, not restarting", project.Name)
@@ -159,17 +163,27 @@ func OutReader(id int, name string, buf io.ReadCloser, channel chan string) {
 		// aqui podriamos decir
 		output := scanner.Text()
 		//	fmt.Println(name, output)
-		logRepo.Create(&executionlogs.NewLog{
-			IdProject: id,
-			Content:   output,
-		})
-		select {
-		case channel <- output:
-		default:
-		}
+		SaveAndSend(channel, output, id)
+
 	}
 }
 
+func ErrReader(id int, name string, buf io.ReadCloser, channel chan string) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Recovered from panic in ErrReader for %s: %v\n", name, r)
+		}
+	}()
+	scanner := bufio.NewScanner(buf)
+	scanner.Buffer(make([]byte, 1024), 1024*1024)
+	for scanner.Scan() {
+		output := scanner.Text()
+		SaveAndSend(channel, output, id)
+		// i just want to know what is happening this is for testing
+		//		fmt.Println(name, output)
+
+	}
+}
 func SaveAndSend(channel chan string, output string, projectID int) {
 	logRepo.Create(&executionlogs.NewLog{
 		IdProject: projectID,
@@ -178,7 +192,6 @@ func SaveAndSend(channel chan string, output string, projectID int) {
 	select {
 	case channel <- output:
 	default:
-		log.Printf("Channel full for project %d, message dropped", projectID)
 	}
 }
 
