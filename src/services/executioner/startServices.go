@@ -70,6 +70,9 @@ func StartProject(id int) error {
 
 }
 func RestartProject(id int) error {
+	if deletingAll {
+		return nil
+	}
 	project, err := pRepo.GetByID(id)
 	if err != nil {
 		return err
@@ -171,7 +174,7 @@ func OutReader(id int, name string, buf io.ReadCloser, channel chan string, last
 		output := scanner.Text()
 		//	fmt.Println(name, output)
 		SaveAndSend(channel, output, id)
-		lastErr.Clean()
+		lastErr.FromStdout()
 
 	}
 }
@@ -185,9 +188,14 @@ func ErrReader(id int, name string, buf io.ReadCloser, channel chan string, last
 	scanner := bufio.NewScanner(buf)
 	scanner.Buffer(make([]byte, 1024), 1024*1024)
 	for scanner.Scan() {
-
+		// i am just trying to check something i dont want to erase anything weird
+		if lastErr.ComingFromStdOut() {
+			lastErr.Clean()
+		}
 		output := scanner.Text()
+		fmt.Println(output)
 		lastErr.AppendValue(output)
+		lastErr.FromStderr()
 		SaveAndSend(channel, output, id)
 
 		// i just want to know what is happening this is for testing
@@ -208,4 +216,8 @@ func SaveAndSend(channel chan string, output string, projectID int) {
 
 func StoppingAll() {
 	deletingAll = true
+	runningProjects.Range(func(i int, rp *executioner.RunningProject) bool {
+		stopCmd(rp.Cmd)
+		return true
+	})
 }
