@@ -37,7 +37,7 @@ async function loadLogs(idProject: number) {
             moreLogsButton.textContent = "Loading..."
         }
         
-        const paginatedLogs = await GetLogs(oldId)
+        const paginatedLogs = await GetLogs(oldId, idProject)
         
         if (paginatedLogs.logs.length > 0) {
             // Prepend older logs at the top (logs are already reversed from server)

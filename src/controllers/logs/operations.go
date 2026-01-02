@@ -15,7 +15,8 @@ import (
 // GET /logs?first_id=0
 func GetLogs(c *fiber.Ctx) error {
 	firstIDQ := c.QueryInt("id")
-	paginated, err := logRepo.Get(firstIDQ)
+	idProjectQ := c.QueryInt("id-project")
+	paginated, err := logRepo.Get(firstIDQ, idProjectQ)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": err.Error(),

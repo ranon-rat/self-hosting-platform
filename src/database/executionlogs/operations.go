@@ -1,6 +1,7 @@
 package executionlogsDB
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/ranon-rat/self-hosting-manager/src/domain"
@@ -33,17 +34,19 @@ func (r Repository) Create(log *executionlogs.NewLog) error {
 }
 
 // creo que esto deberia de funcionar?
-func (r Repository) Get(oldId int) ([]executionlogs.Logs, error) {
+func (r Repository) Get(oldId, projectID int) ([]executionlogs.Logs, error) {
 	logs := []executionlogs.Logs{}
 	query := baseSelectLogQuery
 	args := []any{}
-	if oldId != 0 {
-		query += ` WHERE el.id < ?`
+	query += ` WHERE el.id_project = ? `
+	args = append(args, projectID)
+	if projectID != 0 {
+		query += ` AND el.id < ? `
 		args = append(args, oldId)
 	}
 	query += ` ORDER BY el.id DESC LIMIT ?`
 	args = append(args, domain.LIMIT_PAGE)
-
+	fmt.Println(query, args)
 	err := r.DB.Select(&logs, query, args...)
 	return logs, err
 }
