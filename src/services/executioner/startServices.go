@@ -193,7 +193,7 @@ func ErrReader(id int, name string, buf io.ReadCloser, channel chan string, last
 			lastErr.Clean()
 		}
 		output := scanner.Text()
-		fmt.Println(output)
+		fmt.Println("from error", output)
 		lastErr.AppendValue(output)
 		lastErr.FromStderr()
 		SaveAndSend(channel, output, id)
