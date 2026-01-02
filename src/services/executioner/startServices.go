@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"github.com/ranon-rat/self-hosting-manager/src/domain"
 	"github.com/ranon-rat/self-hosting-manager/src/domain/executioner"
@@ -17,10 +18,8 @@ import (
 )
 
 var runningProjects = domain.NewSecureMap[int, *executioner.RunningProject]()
-
-// esto es util para el futuro websocket
 var OutputChannels = domain.NewSecureMap[int, chan string]()
-var deletingAll = false
+var deletingAll atomic.Bool
 
 func StartServices() {
 	projects, err := pRepo.Search("")
@@ -70,7 +69,7 @@ func StartProject(id int) error {
 
 }
 func RestartProject(id int) error {
-	if deletingAll {
+	if deletingAll.Load() {
 		return nil
 	}
 	project, err := pRepo.GetByID(id)
@@ -193,7 +192,6 @@ func ErrReader(id int, name string, buf io.ReadCloser, channel chan string, last
 			lastErr.Clean()
 		}
 		output := scanner.Text()
-		fmt.Println("from error", output)
 		lastErr.AppendValue(output)
 		lastErr.FromStderr()
 		SaveAndSend(channel, output, id)
@@ -215,7 +213,7 @@ func SaveAndSend(channel chan string, output string, projectID int) {
 }
 
 func StoppingAll() {
-	deletingAll = true
+	deletingAll.Store(true)
 	runningProjects.Range(func(i int, rp *executioner.RunningProject) bool {
 		stopCmd(rp.Cmd)
 		return true
