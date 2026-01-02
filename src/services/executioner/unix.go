@@ -8,6 +8,13 @@ import (
 	"time"
 )
 
+func setSysProcAttr(cmd *exec.Cmd) {
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setpgid: true,
+		Pgid:    0,
+	}
+}
+
 func stopCmd(cmd *exec.Cmd) {
 
 	if cmd == nil || cmd.Process == nil {
