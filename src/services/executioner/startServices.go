@@ -111,7 +111,7 @@ func Executioner(project *projectsD.Project) {
 	}
 	channel := make(chan string, executioner.MAX_CHANNEL_BUFFER)
 	OutputChannels.Set(project.ID, channel)
-	lastErrOutput := domain.NewSecureStrContainer()
+	lastErrOutput := domain.NewSecureStrContainer(50)
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 	go func() {

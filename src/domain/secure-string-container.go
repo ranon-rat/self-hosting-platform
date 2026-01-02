@@ -6,16 +6,21 @@ type SecureStringContainer struct {
 	content          string
 	comingFromStdout bool
 	mu               sync.RWMutex
+	howMany          int
+	maxLines         int
 }
 
-func NewSecureStrContainer() *SecureStringContainer {
-	return &SecureStringContainer{}
+func NewSecureStrContainer(maxLines int) *SecureStringContainer {
+	return &SecureStringContainer{maxLines: maxLines}
 }
 func (ssc *SecureStringContainer) Clean() {
 	ssc.mu.Lock()
 	defer ssc.mu.Unlock()
-
+	ssc.UnsafeClean()
+}
+func (ssc *SecureStringContainer) UnsafeClean() {
 	ssc.content = ""
+	ssc.howMany = 0
 }
 func (ssc *SecureStringContainer) FromStdout() {
 	ssc.mu.Lock()
@@ -36,6 +41,10 @@ func (ssc *SecureStringContainer) AppendValue(src string) {
 	ssc.mu.Lock()
 	defer ssc.mu.Unlock()
 	ssc.content += src
+	ssc.howMany++
+	if ssc.howMany > ssc.maxLines {
+		ssc.UnsafeClean()
+	}
 }
 
 func (ssc *SecureStringContainer) Content() string {
