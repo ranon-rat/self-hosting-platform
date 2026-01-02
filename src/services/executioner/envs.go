@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+// this is mostly used to avoid sharing anything with the other projects
+// since this project is small i dont need to have much stuff.
 func LoadLocalEnviroments() []string {
 	ourEnvs := os.Environ()
 	envs := make([]string, 0, len(ourEnvs))

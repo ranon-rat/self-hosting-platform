@@ -40,6 +40,7 @@ func (ssc *SecureErrContainer) ComingFromStdOut() bool {
 func (ssc *SecureErrContainer) AppendValue(src string) {
 	ssc.mu.Lock()
 	defer ssc.mu.Unlock()
+	ssc.comingFromStdout = false
 	ssc.content += src
 	ssc.howMany++
 	if ssc.howMany > ssc.maxLines {

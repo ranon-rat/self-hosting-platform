@@ -1,11 +1,11 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/ranon-rat/self-hosting-manager/src/database"
@@ -20,29 +20,23 @@ func main() {
 	godotenv.Load(".env.local")
 	database.Setup()
 
-	sigChan := make(chan os.Signal, 1)
-
-	// Registrar las señales que quieres capturar
-	signal.Notify(sigChan,
+	ctx, stop := signal.NotifyContext(
+		context.Background(),
 		os.Interrupt,    // SIGINT (Ctrl+C)
 		syscall.SIGTERM, // SIGTERM (kill)
 		syscall.SIGQUIT, // SIGQUIT (Ctrl+\)
 	)
+	defer stop()
 
-	// Goroutine que escucha las señales
-	go func() {
-		sig := <-sigChan
-		log.Printf("Recibida señal: %v. Deteniendo todos los proyectos...", sig)
-		executionerServices.StoppingAll()
-		// Espera opcional para que terminen los procesos
-		time.Sleep(2 * time.Second)
-		log.Println("Limpieza completa. Saliendo...")
-		os.Exit(0)
-	}()
 	repos := repositories.Repositories{
 		ProjectRepo: projectsDB.NewRepo(database.GetDB()),
 		LogRepo:     executionlogsDB.NewRepo(database.GetDB()),
 	}
+
 	executionerServices.Setup(&repos)
 	router.Setup(&repos)
+	<-ctx.Done() // ⛔ wait for systemd signal
+	log.Println("Shutdown signal received")
+	executionerServices.StoppingAll(ctx)
+	log.Println("Cleanup finished, exiting")
 }
