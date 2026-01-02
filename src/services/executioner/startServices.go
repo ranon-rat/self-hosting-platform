@@ -130,7 +130,7 @@ func Executioner(project *projectsD.Project) {
 		err := cmd.Wait()
 		runningProjects.Delete(project.ID)
 		wg.Wait()
-
+		killTree(cmd)
 		if ctx.Err() == context.Canceled {
 			SaveAndSend(channel, err.Error(), project.ID)
 			goto end
