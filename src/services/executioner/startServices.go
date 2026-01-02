@@ -108,14 +108,15 @@ func Executioner(project *projectsD.Project) {
 	}
 	channel := make(chan string, executioner.MAX_CHANNEL_BUFFER)
 	OutputChannels.Set(project.ID, channel)
+	lastErrOutput := domain.NewSecureStrContainer()
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 	go func() {
-		OutReader(project.ID, project.Name, stdout, channel)
+		OutReader(project.ID, project.Name, stdout, channel, lastErrOutput)
 		wg.Done()
 	}()
 	go func() {
-		ErrReader(project.ID, project.Name, stderr, channel)
+		ErrReader(project.ID, project.Name, stderr, channel, lastErrOutput)
 		wg.Done()
 	}()
 	runningProjects.Set(project.ID, &executioner.RunningProject{
@@ -131,13 +132,15 @@ func Executioner(project *projectsD.Project) {
 		err := cmd.Wait()
 		runningProjects.Delete(project.ID)
 		wg.Wait()
+		lastErrStr := strings.ToLower(lastErrOutput.Content())
 		if ctx.Err() == context.Canceled {
 			SaveAndSend(channel, err.Error(), project.ID)
 			goto justClean
 		}
-		if err != nil {
+		if err != nil || lastErrOutput.Content() != "" {
 			SaveAndSend(channel, err.Error(), project.ID)
-			if strings.Contains(strings.ToLower(err.Error()), "bind") {
+
+			if strings.Contains(strings.ToLower(err.Error()), "bind") || strings.Contains(lastErrStr, "bind") {
 				log.Println("Port already in use, not restarting", project.Name)
 				goto justClean
 			}
@@ -151,7 +154,7 @@ func Executioner(project *projectsD.Project) {
 		OutputChannels.Delete(project.ID)
 	}()
 }
-func OutReader(id int, name string, buf io.ReadCloser, channel chan string) {
+func OutReader(id int, name string, buf io.ReadCloser, channel chan string, lastErr *domain.SecureStringContainer) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -164,11 +167,12 @@ func OutReader(id int, name string, buf io.ReadCloser, channel chan string) {
 		output := scanner.Text()
 		//	fmt.Println(name, output)
 		SaveAndSend(channel, output, id)
+		lastErr.Clean()
 
 	}
 }
 
-func ErrReader(id int, name string, buf io.ReadCloser, channel chan string) {
+func ErrReader(id int, name string, buf io.ReadCloser, channel chan string, lastErr *domain.SecureStringContainer) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("Recovered from panic in ErrReader for %s: %v\n", name, r)
@@ -177,8 +181,11 @@ func ErrReader(id int, name string, buf io.ReadCloser, channel chan string) {
 	scanner := bufio.NewScanner(buf)
 	scanner.Buffer(make([]byte, 1024), 1024*1024)
 	for scanner.Scan() {
+
 		output := scanner.Text()
+		lastErr.AppendValue(output)
 		SaveAndSend(channel, output, id)
+
 		// i just want to know what is happening this is for testing
 		//		fmt.Println(name, output)
 
