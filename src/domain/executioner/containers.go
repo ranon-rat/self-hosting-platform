@@ -1,8 +1,8 @@
-package domain
+package executioner
 
 import "sync"
 
-type SecureStringContainer struct {
+type SecureErrContainer struct {
 	content          string
 	comingFromStdout bool
 	mu               sync.RWMutex
@@ -10,34 +10,34 @@ type SecureStringContainer struct {
 	maxLines         int
 }
 
-func NewSecureStrContainer(maxLines int) *SecureStringContainer {
-	return &SecureStringContainer{maxLines: maxLines}
+func NewSecureErrContainer(maxLines int) *SecureErrContainer {
+	return &SecureErrContainer{maxLines: maxLines}
 }
-func (ssc *SecureStringContainer) Clean() {
+func (ssc *SecureErrContainer) Clean() {
 	ssc.mu.Lock()
 	defer ssc.mu.Unlock()
 	ssc.UnsafeClean()
 }
-func (ssc *SecureStringContainer) UnsafeClean() {
+func (ssc *SecureErrContainer) UnsafeClean() {
 	ssc.content = ""
 	ssc.howMany = 0
 }
-func (ssc *SecureStringContainer) FromStdout() {
+func (ssc *SecureErrContainer) FromStdout() {
 	ssc.mu.Lock()
 	defer ssc.mu.Unlock()
 	ssc.comingFromStdout = true
 }
-func (ssc *SecureStringContainer) FromStderr() {
+func (ssc *SecureErrContainer) FromStderr() {
 	ssc.mu.Lock()
 	defer ssc.mu.Unlock()
 	ssc.comingFromStdout = false
 }
-func (ssc *SecureStringContainer) ComingFromStdOut() bool {
+func (ssc *SecureErrContainer) ComingFromStdOut() bool {
 	ssc.mu.RLock()
 	defer ssc.mu.RUnlock()
 	return ssc.comingFromStdout
 }
-func (ssc *SecureStringContainer) AppendValue(src string) {
+func (ssc *SecureErrContainer) AppendValue(src string) {
 	ssc.mu.Lock()
 	defer ssc.mu.Unlock()
 	ssc.content += src
@@ -47,7 +47,7 @@ func (ssc *SecureStringContainer) AppendValue(src string) {
 	}
 }
 
-func (ssc *SecureStringContainer) Content() string {
+func (ssc *SecureErrContainer) Content() string {
 	ssc.mu.Lock()
 	defer ssc.mu.Unlock()
 	return ssc.content

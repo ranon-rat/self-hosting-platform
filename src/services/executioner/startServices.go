@@ -115,7 +115,7 @@ func Executioner(project *projectsD.Project) {
 		channel = domain.NewSecureChanneling[string](executioner.MAX_CHANNEL_BUFFER)
 		OutputChannels.Set(project.ID, channel)
 	}
-	lastErrOutput := domain.NewSecureStrContainer(50)
+	lastErrOutput := executioner.NewSecureErrContainer(50)
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 	go func() {
@@ -164,7 +164,7 @@ func Executioner(project *projectsD.Project) {
 		OutputChannels.Delete(project.ID)
 	}()
 }
-func OutReader(id int, name string, buf io.ReadCloser, channel *domain.SecureChanneling[string], lastErr *domain.SecureStringContainer) {
+func OutReader(id int, name string, buf io.ReadCloser, channel *domain.SecureChanneling[string], lastErr *executioner.SecureErrContainer) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -182,7 +182,7 @@ func OutReader(id int, name string, buf io.ReadCloser, channel *domain.SecureCha
 	}
 }
 
-func ErrReader(id int, name string, buf io.ReadCloser, channel *domain.SecureChanneling[string], lastErr *domain.SecureStringContainer) {
+func ErrReader(id int, name string, buf io.ReadCloser, channel *domain.SecureChanneling[string], lastErr *executioner.SecureErrContainer) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("Recovered from panic in ErrReader for %s: %v\n", name, r)
