@@ -49,6 +49,7 @@ func StopProject(id int) error {
 	}
 	// Primero cancela el contexto (cierre gracioso)
 	cmd.Cancel()
+	cmd.Cmd.Wait()
 	return nil
 }
 func StartProject(id int) error {
@@ -86,6 +87,7 @@ func Executioner(project *projectsD.Project) {
 	}
 	if rp, e := runningProjects.Get(project.ID); e {
 		rp.Cancel()
+		rp.Cmd.Wait()
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cmd := exec.CommandContext(ctx, "bash", "-lc", project.Command)
@@ -129,15 +131,20 @@ func Executioner(project *projectsD.Project) {
 		return
 	}
 	go func() {
-		cmd.Wait()
+		err := cmd.Wait()
 		runningProjects.Delete(project.ID)
 		wg.Wait()
 		if ctx.Err() == context.Canceled {
-			cmd.Process.Kill()
-			cmd.Process.Release()
 			close(channel)
 			OutputChannels.Delete(project.ID)
 			return
+		}
+		if err != nil {
+			SaveAndSend(channel, err.Error(), project.ID)
+			if strings.Contains(err.Error(), "bind") {
+				log.Println("Port already in use, not restarting", project.Name)
+				return
+			}
 		}
 		RestartProject(project.ID)
 
@@ -155,14 +162,8 @@ func OutReader(id int, name string, buf io.ReadCloser, channel chan string) {
 		// aqui podriamos decir
 		output := scanner.Text()
 		//	fmt.Println(name, output)
-		logRepo.Create(&executionlogs.NewLog{
-			IdProject: id,
-			Content:   output,
-		})
-		select {
-		case channel <- output:
-		default:
-		}
+		SaveAndSend(channel, output, id)
+
 	}
 }
 
@@ -176,15 +177,19 @@ func ErrReader(id int, name string, buf io.ReadCloser, channel chan string) {
 	scanner.Buffer(make([]byte, 1024), 1024*1024)
 	for scanner.Scan() {
 		output := scanner.Text()
+		SaveAndSend(channel, output, id)
 		// i just want to know what is happening this is for testing
 		//		fmt.Println(name, output)
-		logRepo.Create(&executionlogs.NewLog{
-			IdProject: id,
-			Content:   output,
-		})
-		select {
-		case channel <- output:
-		default:
-		}
+
+	}
+}
+func SaveAndSend(channel chan string, output string, projectID int) {
+	logRepo.Create(&executionlogs.NewLog{
+		IdProject: projectID,
+		Content:   output,
+	})
+	select {
+	case channel <- output:
+	default:
 	}
 }

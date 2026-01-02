@@ -4,3 +4,4 @@ db/database.db
 tmp
 main
 public/dist
+upload.bat
