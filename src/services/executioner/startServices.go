@@ -20,6 +20,7 @@ var runningProjects = domain.NewSecureMap[int, *executioner.RunningProject]()
 
 // esto es util para el futuro websocket
 var OutputChannels = domain.NewSecureMap[int, chan string]()
+var deletingAll = false
 
 func StartServices() {
 	projects, err := pRepo.Search("")
@@ -100,23 +101,16 @@ func Executioner(project *projectsD.Project) {
 		cancel()
 		return
 	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		cancel()
-		return
-	}
+
 	channel := make(chan string, executioner.MAX_CHANNEL_BUFFER)
 	OutputChannels.Set(project.ID, channel)
 	wg := sync.WaitGroup{}
-	wg.Add(2)
+	wg.Add(1)
 	go func() {
 		OutReader(project.ID, project.Name, stdout, channel)
 		wg.Done()
 	}()
-	go func() {
-		ErrReader(project.ID, project.Name, stderr, channel)
-		wg.Done()
-	}()
+
 	runningProjects.Set(project.ID, &executioner.RunningProject{
 		Cmd:    cmd,
 		Cancel: cancel,
@@ -135,6 +129,7 @@ func Executioner(project *projectsD.Project) {
 			goto justClean
 		}
 		if err != nil {
+			fmt.Println(err)
 			SaveAndSend(channel, err.Error(), project.ID)
 			if strings.Contains(strings.ToLower(err.Error()), "bind") {
 				log.Println("Port already in use, not restarting", project.Name)
@@ -167,22 +162,6 @@ func OutReader(id int, name string, buf io.ReadCloser, channel chan string) {
 	}
 }
 
-func ErrReader(id int, name string, buf io.ReadCloser, channel chan string) {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Printf("Recovered from panic in ErrReader for %s: %v\n", name, r)
-		}
-	}()
-	scanner := bufio.NewScanner(buf)
-	scanner.Buffer(make([]byte, 1024), 1024*1024)
-	for scanner.Scan() {
-		output := scanner.Text()
-		SaveAndSend(channel, output, id)
-		// i just want to know what is happening this is for testing
-		//		fmt.Println(name, output)
-
-	}
-}
 func SaveAndSend(channel chan string, output string, projectID int) {
 	logRepo.Create(&executionlogs.NewLog{
 		IdProject: projectID,
@@ -192,4 +171,8 @@ func SaveAndSend(channel chan string, output string, projectID int) {
 	case channel <- output:
 	default:
 	}
+}
+
+func StoppingAll() {
+	deletingAll = true
 }
