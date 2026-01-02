@@ -18,10 +18,8 @@ func stopCmd(cmd *exec.Cmd) {
 		return
 	}
 
-	// intento graceful
 	syscall.Kill(-pgid, syscall.SIGTERM)
 
-	// escalamiento
 	time.AfterFunc(2*time.Second, func() {
 		syscall.Kill(-pgid, syscall.SIGKILL)
 	})

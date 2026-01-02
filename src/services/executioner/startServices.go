@@ -132,17 +132,20 @@ func Executioner(project *projectsD.Project) {
 		wg.Wait()
 		if ctx.Err() == context.Canceled {
 			SaveAndSend(channel, err.Error(), project.ID)
-			goto end
+			goto justClean
 		}
 		if err != nil {
 			SaveAndSend(channel, err.Error(), project.ID)
 			if strings.Contains(strings.ToLower(err.Error()), "bind") {
 				log.Println("Port already in use, not restarting", project.Name)
-				goto end
+				goto justClean
 			}
 		}
+		close(channel)
+		OutputChannels.Delete(project.ID)
 		RestartProject(project.ID)
-	end:
+		return
+	justClean:
 		close(channel)
 		OutputChannels.Delete(project.ID)
 	}()
