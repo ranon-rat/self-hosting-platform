@@ -29,7 +29,7 @@ func (ssc *SecureStringContainer) FromStderr() {
 }
 func (ssc *SecureStringContainer) ComingFromStdOut() bool {
 	ssc.mu.RLock()
-	defer ssc.mu.Unlock()
+	defer ssc.mu.RUnlock()
 	return ssc.comingFromStdout
 }
 func (ssc *SecureStringContainer) AppendValue(src string) {
