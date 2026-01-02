@@ -34,7 +34,7 @@ func main() {
 	}
 
 	executionerServices.Setup(&repos)
-	router.Setup(&repos)
+	go router.Setup(&repos)
 	<-ctx.Done() // ⛔ wait for systemd signal
 	log.Println("Shutdown signal received")
 	executionerServices.StoppingAll(ctx)

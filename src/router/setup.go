@@ -6,8 +6,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	logsC "github.com/ranon-rat/self-hosting-manager/src/controllers/logs"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	logsC "github.com/ranon-rat/self-hosting-manager/src/controllers/logs"
 	projectsC "github.com/ranon-rat/self-hosting-manager/src/controllers/projects"
 	"github.com/ranon-rat/self-hosting-manager/src/controllers/public"
 	"github.com/ranon-rat/self-hosting-manager/src/domain/repositories"
