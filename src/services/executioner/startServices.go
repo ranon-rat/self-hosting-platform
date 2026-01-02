@@ -125,6 +125,8 @@ func Executioner(project *projectsD.Project) {
 		runningProjects.Delete(project.ID)
 		wg.Wait()
 		if ctx.Err() == context.Canceled {
+			fmt.Println(err)
+
 			SaveAndSend(channel, err.Error(), project.ID)
 			goto justClean
 		}
@@ -157,8 +159,14 @@ func OutReader(id int, name string, buf io.ReadCloser, channel chan string) {
 		// aqui podriamos decir
 		output := scanner.Text()
 		//	fmt.Println(name, output)
-		SaveAndSend(channel, output, id)
-
+		logRepo.Create(&executionlogs.NewLog{
+			IdProject: id,
+			Content:   output,
+		})
+		select {
+		case channel <- output:
+		default:
+		}
 	}
 }
 
@@ -170,6 +178,7 @@ func SaveAndSend(channel chan string, output string, projectID int) {
 	select {
 	case channel <- output:
 	default:
+		log.Printf("Channel full for project %d, message dropped", projectID)
 	}
 }
 
