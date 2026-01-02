@@ -3,11 +3,14 @@
 package executionerServices
 
 import (
+	"fmt"
 	"os/exec"
+	"runtime"
 	"syscall"
 )
 
 func killTree(cmd *exec.Cmd) {
+	fmt.Println("executing from", runtime.GOOS)
 	if cmd.Process == nil {
 		return
 	}
