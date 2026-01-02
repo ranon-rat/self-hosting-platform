@@ -119,11 +119,10 @@ func Executioner(project *projectsD.Project) {
 	cmd.Start()
 	go func() {
 		err := cmd.Wait()
-		OutputChannels.Delete(project.ID)
 		runningProjects.Delete(project.ID)
-
 		if ctx.Err() == context.Canceled {
 			close(channel)
+			OutputChannels.Delete(project.ID)
 			return
 		}
 		if err != nil {

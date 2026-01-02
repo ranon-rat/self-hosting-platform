@@ -40,7 +40,7 @@ func (r Repository) Get(oldId, projectID int) ([]executionlogs.Logs, error) {
 	args := []any{}
 	query += ` WHERE el.id_project = ? `
 	args = append(args, projectID)
-	if projectID != 0 {
+	if oldId != 0 {
 		query += ` AND el.id < ? `
 		args = append(args, oldId)
 	}
