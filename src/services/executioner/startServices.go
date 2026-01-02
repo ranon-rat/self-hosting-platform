@@ -98,13 +98,11 @@ func Executioner(project *projectsD.Project) {
 		cancel()
 		return
 	}
-	defer stdout.Close()
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		cancel()
 		return
 	}
-	defer stderr.Close()
 	channel, exist := OutputChannels.Get(project.ID)
 	if !exist {
 		channel = make(chan string, executioner.MAX_CHANNEL_BUFFER)
@@ -135,6 +133,7 @@ func Executioner(project *projectsD.Project) {
 		runningProjects.Delete(project.ID)
 		wg.Wait()
 		if ctx.Err() == context.Canceled {
+			SaveAndSend(channel, err.Error(), project.ID)
 			close(channel)
 			OutputChannels.Delete(project.ID)
 			return
