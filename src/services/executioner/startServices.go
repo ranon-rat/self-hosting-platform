@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/ranon-rat/self-hosting-manager/src/domain"
 	"github.com/ranon-rat/self-hosting-manager/src/domain/executioner"
@@ -49,7 +50,7 @@ func StopProject(id int) error {
 	}
 	// Primero cancela el contexto (cierre gracioso)
 	cmd.Cancel()
-	cmd.Cmd.Wait()
+	time.Sleep(time.Second)
 	return nil
 }
 func StartProject(id int) error {
@@ -87,7 +88,7 @@ func Executioner(project *projectsD.Project) {
 	}
 	if rp, e := runningProjects.Get(project.ID); e {
 		rp.Cancel()
-		rp.Cmd.Wait()
+		time.Sleep(time.Second)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cmd := exec.CommandContext(ctx, "bash", "-lc", project.Command)
@@ -140,7 +141,7 @@ func Executioner(project *projectsD.Project) {
 		}
 		if err != nil {
 			SaveAndSend(channel, err.Error(), project.ID)
-			if strings.Contains(err.Error(), "bind") {
+			if strings.Contains(strings.ToLower(err.Error()), "bind") {
 				log.Println("Port already in use, not restarting", project.Name)
 				return
 			}
