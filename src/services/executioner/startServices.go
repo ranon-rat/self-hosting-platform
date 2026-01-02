@@ -18,7 +18,7 @@ import (
 )
 
 var runningProjects = domain.NewSecureMap[int, *executioner.RunningProject]()
-var OutputChannels = domain.NewSecureMap[int, chan string]()
+var OutputChannels = domain.NewSecureMap[int, *domain.SecureChanneling[string]]()
 var deletingAll atomic.Bool
 
 func StartServices() {
@@ -48,6 +48,7 @@ func StopProject(id int) error {
 		return nil
 	}
 	// Primero cancela el contexto (cierre gracioso)
+	cmd.Cancel()
 	stopCmd(cmd.Cmd)
 	runningProjects.Delete(id)
 	return nil
@@ -89,10 +90,12 @@ func Executioner(project *projectsD.Project) {
 		return
 	}
 	if rp, e := runningProjects.Get(project.ID); e {
+		rp.Cmd.Cancel()
 		stopCmd(rp.Cmd)
 		runningProjects.Delete(project.ID)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
+
 	cmd := exec.CommandContext(ctx, "bash", "-lc" /*"trap 'kill 0' SIGTERM; "+*/, project.Command)
 	cmd.Dir = project.Dir
 	cmd.Env = executableEnv
@@ -109,7 +112,7 @@ func Executioner(project *projectsD.Project) {
 	}
 	channel, exists := OutputChannels.Get(project.ID)
 	if !exists {
-		channel = make(chan string, executioner.MAX_CHANNEL_BUFFER)
+		channel = domain.NewSecureChanneling[string](executioner.MAX_CHANNEL_BUFFER)
 		OutputChannels.Set(project.ID, channel)
 	}
 	lastErrOutput := domain.NewSecureStrContainer(50)
@@ -123,15 +126,15 @@ func Executioner(project *projectsD.Project) {
 		ErrReader(project.ID, project.Name, stderr, channel, lastErrOutput)
 		wg.Done()
 	}()
+	if err := cmd.Start(); err != nil {
+		cancel()
+		stopCmd(cmd)
+		return
+	}
 	runningProjects.Set(project.ID, &executioner.RunningProject{
 		Cmd:    cmd,
 		Cancel: cancel,
 	})
-
-	if err := cmd.Start(); err != nil {
-		stopCmd(cmd)
-		return
-	}
 	go func() {
 		err := cmd.Wait()
 		runningProjects.Delete(project.ID)
@@ -156,11 +159,12 @@ func Executioner(project *projectsD.Project) {
 		RestartProject(project.ID)
 		return
 	justClean:
-		close(channel)
+		// bueno aqui no deberia de haber un problema pero
+		channel.Close()
 		OutputChannels.Delete(project.ID)
 	}()
 }
-func OutReader(id int, name string, buf io.ReadCloser, channel chan string, lastErr *domain.SecureStringContainer) {
+func OutReader(id int, name string, buf io.ReadCloser, channel *domain.SecureChanneling[string], lastErr *domain.SecureStringContainer) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -178,7 +182,7 @@ func OutReader(id int, name string, buf io.ReadCloser, channel chan string, last
 	}
 }
 
-func ErrReader(id int, name string, buf io.ReadCloser, channel chan string, lastErr *domain.SecureStringContainer) {
+func ErrReader(id int, name string, buf io.ReadCloser, channel *domain.SecureChanneling[string], lastErr *domain.SecureStringContainer) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("Recovered from panic in ErrReader for %s: %v\n", name, r)
@@ -201,20 +205,18 @@ func ErrReader(id int, name string, buf io.ReadCloser, channel chan string, last
 
 	}
 }
-func SaveAndSend(channel chan string, output string, projectID int) {
+func SaveAndSend(channel *domain.SecureChanneling[string], output string, projectID int) {
 	logRepo.Create(&executionlogs.NewLog{
 		IdProject: projectID,
 		Content:   output,
 	})
-	select {
-	case channel <- output:
-	default:
-	}
+	channel.AppendSend(output)
 }
 
 func StoppingAll() {
 	deletingAll.Store(true)
 	runningProjects.Range(func(i int, rp *executioner.RunningProject) bool {
+		rp.Cancel()
 		stopCmd(rp.Cmd)
 		return true
 	})

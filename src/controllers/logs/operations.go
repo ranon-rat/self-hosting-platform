@@ -83,10 +83,10 @@ func Messager(id int) {
 		CloseAll(id)
 		return
 	}
-	for out := range channel {
+	channel.Range(func(out string) bool {
 		connections, exist := connectionsTunnels.Get(id)
 		if !exist {
-			break
+			return false
 		}
 
 		connections.Range(func(conn *websocket.Conn, _ bool) bool {
@@ -99,5 +99,6 @@ func Messager(id int) {
 			}
 			return true
 		})
-	}
+		return true
+	})
 }
