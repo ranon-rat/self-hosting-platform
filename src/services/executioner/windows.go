@@ -8,6 +8,6 @@ func setSysProcAttr(cmd *exec.Cmd) {
 	// no-op en windows
 }
 
-func killTree(cmd *exec.Cmd) {
-
+func stopCmd(cmd *exec.Cmd) {
+	cmd.Cancel()
 }

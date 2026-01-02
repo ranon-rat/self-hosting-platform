@@ -48,7 +48,7 @@ func StopProject(id int) error {
 		return nil
 	}
 	// Primero cancela el contexto (cierre gracioso)
-	cmd.Cancel()
+	stopCmd(cmd.Cmd)
 	runningProjects.Delete(id)
 	return nil
 }
@@ -86,7 +86,7 @@ func Executioner(project *projectsD.Project) {
 		return
 	}
 	if rp, e := runningProjects.Get(project.ID); e {
-		rp.Cancel()
+		stopCmd(rp.Cmd)
 		runningProjects.Delete(project.ID)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
@@ -123,14 +123,13 @@ func Executioner(project *projectsD.Project) {
 	})
 
 	if err := cmd.Start(); err != nil {
-		cancel()
+		stopCmd(cmd)
 		return
 	}
 	go func() {
 		err := cmd.Wait()
 		runningProjects.Delete(project.ID)
 		wg.Wait()
-		killTree(cmd)
 		if ctx.Err() == context.Canceled {
 			SaveAndSend(channel, err.Error(), project.ID)
 			goto end

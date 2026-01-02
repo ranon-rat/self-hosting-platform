@@ -3,15 +3,13 @@
 package executionerServices
 
 import (
-	"fmt"
 	"os/exec"
-	"runtime"
 	"syscall"
+	"time"
 )
 
-func killTree(cmd *exec.Cmd) {
-	fmt.Println("executing from", runtime.GOOS)
-	if cmd.Process == nil {
+func stopCmd(cmd *exec.Cmd) {
+	if cmd == nil || cmd.Process == nil {
 		return
 	}
 
@@ -20,5 +18,11 @@ func killTree(cmd *exec.Cmd) {
 		return
 	}
 
+	// intento graceful
 	syscall.Kill(-pgid, syscall.SIGTERM)
+
+	// escalamiento
+	time.AfterFunc(2*time.Second, func() {
+		syscall.Kill(-pgid, syscall.SIGKILL)
+	})
 }
