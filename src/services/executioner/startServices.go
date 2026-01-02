@@ -90,7 +90,7 @@ func Executioner(project *projectsD.Project) {
 		runningProjects.Delete(project.ID)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	cmd := exec.CommandContext(ctx, "bash", "-lc", "trap 'kill 0' SIGTERM; "+project.Command)
+	cmd := exec.CommandContext(ctx, "bash", "-lc" /*"trap 'kill 0' SIGTERM; "+*/, project.Command)
 	cmd.Dir = project.Dir
 	cmd.Env = executableEnv
 
