@@ -8,6 +8,7 @@ import (
 	"log"
 	"os/exec"
 	"strings"
+	"sync"
 
 	"github.com/ranon-rat/self-hosting-manager/src/domain"
 	"github.com/ranon-rat/self-hosting-manager/src/domain/executioner"
@@ -46,6 +47,7 @@ func StopProject(id int) error {
 	if !exists {
 		return nil
 	}
+	// Primero cancela el contexto (cierre gracioso)
 	cmd.Cancel()
 	return nil
 }
@@ -74,10 +76,6 @@ func RestartProject(id int) error {
 		return fmt.Errorf("user: you cannot restart a paused project")
 	}
 
-	cmd, exists := runningProjects.Get(id)
-	if exists {
-		cmd.Cancel()
-	}
 	Executioner(project)
 	return nil
 }
@@ -98,36 +96,51 @@ func Executioner(project *projectsD.Project) {
 		cancel()
 		return
 	}
+	defer stdout.Close()
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		cancel()
 		return
 	}
+	defer stderr.Close()
 	channel, exist := OutputChannels.Get(project.ID)
 	if !exist {
 		channel = make(chan string, executioner.MAX_CHANNEL_BUFFER)
 		OutputChannels.Set(project.ID, channel)
 	}
 	OutputChannels.Set(project.ID, channel)
-	go OutReader(project.ID, project.Name, stdout, channel)
-	go ErrReader(project.ID, project.Name, stderr, channel)
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+	go func() {
+		OutReader(project.ID, project.Name, stdout, channel)
+		wg.Done()
+	}()
+	go func() {
+		ErrReader(project.ID, project.Name, stderr, channel)
+		wg.Done()
+	}()
 	runningProjects.Set(project.ID, &executioner.RunningProject{
 		Cmd:    cmd,
 		Cancel: cancel,
 	})
 
-	cmd.Start()
+	if err := cmd.Start(); err != nil {
+		cancel()
+		return
+	}
 	go func() {
-		err := cmd.Wait()
+		cmd.Wait()
 		runningProjects.Delete(project.ID)
+		wg.Wait()
 		if ctx.Err() == context.Canceled {
+			cmd.Process.Kill()
+			cmd.Process.Release()
 			close(channel)
 			OutputChannels.Delete(project.ID)
 			return
 		}
-		if err != nil {
-			RestartProject(project.ID)
-		}
+		RestartProject(project.ID)
+
 	}()
 }
 func OutReader(id int, name string, buf io.ReadCloser, channel chan string) {
@@ -173,6 +186,5 @@ func ErrReader(id int, name string, buf io.ReadCloser, channel chan string) {
 		case channel <- output:
 		default:
 		}
-
 	}
 }
