@@ -9,7 +9,6 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/ranon-rat/self-hosting-manager/src/domain"
 	"github.com/ranon-rat/self-hosting-manager/src/domain/executioner"
@@ -50,7 +49,8 @@ func StopProject(id int) error {
 	}
 	// Primero cancela el contexto (cierre gracioso)
 	cmd.Cancel()
-	time.Sleep(time.Second)
+	_ = cmd.Cmd.Wait() // BLOQUEANTE
+	runningProjects.Delete(id)
 	return nil
 }
 func StartProject(id int) error {
@@ -88,7 +88,8 @@ func Executioner(project *projectsD.Project) {
 	}
 	if rp, e := runningProjects.Get(project.ID); e {
 		rp.Cancel()
-		time.Sleep(time.Second)
+		rp.Cmd.Wait() // BLOQUEANTE
+		runningProjects.Delete(project.ID)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cmd := exec.CommandContext(ctx, "bash", "-lc", project.Command)
@@ -104,11 +105,7 @@ func Executioner(project *projectsD.Project) {
 		cancel()
 		return
 	}
-	channel, exist := OutputChannels.Get(project.ID)
-	if !exist {
-		channel = make(chan string, executioner.MAX_CHANNEL_BUFFER)
-		OutputChannels.Set(project.ID, channel)
-	}
+	channel := make(chan string, executioner.MAX_CHANNEL_BUFFER)
 	OutputChannels.Set(project.ID, channel)
 	wg := sync.WaitGroup{}
 	wg.Add(2)
@@ -133,10 +130,10 @@ func Executioner(project *projectsD.Project) {
 		err := cmd.Wait()
 		runningProjects.Delete(project.ID)
 		wg.Wait()
+		defer close(channel)
+		defer OutputChannels.Delete(project.ID)
 		if ctx.Err() == context.Canceled {
 			SaveAndSend(channel, err.Error(), project.ID)
-			close(channel)
-			OutputChannels.Delete(project.ID)
 			return
 		}
 		if err != nil {
