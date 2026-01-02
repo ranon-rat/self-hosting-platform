@@ -7,15 +7,6 @@ import (
 	"syscall"
 	"time"
 )
-//go:build unix
-
-package executionerServices
-
-import (
-	"os/exec"
-	"syscall"
-	"time"
-)
 
 func stopCmd(cmd *exec.Cmd) {
 	if cmd == nil || cmd.Process == nil {
