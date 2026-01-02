@@ -93,6 +93,8 @@ func Executioner(project *projectsD.Project) {
 	cmd := exec.CommandContext(ctx, "bash", "-lc", project.Command)
 	cmd.Dir = project.Dir
 	cmd.Env = executableEnv
+
+	setSysProcAttr(cmd)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		cancel()
