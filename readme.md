@@ -9,4 +9,4 @@ This is a simple manager that i am going to be using to manage the services that
 ![alt text](images/image-1.png)
 ![alt text](images/image-2.png)
 ![alt text](images/image-3.png)
-> Most of the frontend code has been AI generated to develop this project faster.
+> Most of the frontend code has been AI generated because I am not a frontend developer.
