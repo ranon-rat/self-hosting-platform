@@ -275,7 +275,7 @@ async function handleSaveEdit() {
     
     const name = form.querySelector("input[name='name']") as HTMLInputElement
     const dir = form.querySelector("input[name='dir']") as HTMLInputElement
-    const command = form.querySelector("input[name='command']") as HTMLInputElement
+    const command = form.querySelector("textarea[name='command']") as HTMLTextAreaElement
     const thumbnail_url = form.querySelector("input[name='thumbnail_url']") as HTMLInputElement
     
     const submitButton = form.querySelector("button[type='submit']") as HTMLButtonElement
