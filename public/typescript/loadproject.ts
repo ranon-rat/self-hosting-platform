@@ -5,6 +5,13 @@ import { formatDate } from "./lib/date.js"
 let currentProject: Project | null = null
 let isEditing = false
 
+function escapeHtmlContent(text: string): string {
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
 function renderProjectDetails(project: Project, editing: boolean = false): string {
     if (editing) {
         return renderEditForm(project)
@@ -47,8 +54,8 @@ function renderProjectDetails(project: Project, editing: boolean = false): strin
                 
                 <div class="space-y-2">
                     <label class="block text-sm font-medium text-slate-300">Command</label>
-                    <div class="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white font-mono text-sm">
-                        ${project.command}
+                    <div class="px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white font-mono text-sm overflow-x-auto">
+                        <pre class="whitespace-pre-wrap break-all">${escapeHtmlContent(project.command)}</pre>
                     </div>
                 </div>
             </div>
@@ -115,14 +122,12 @@ function renderEditForm(project: Project): string {
                     
                     <div class="space-y-2">
                         <label for="edit-command" class="block text-sm font-medium text-slate-300">Command</label>
-                        <input 
-                            type="text" 
+                        <textarea
                             id="edit-command"
                             name="command"
-                            value="${project.command}"
-                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white font-mono text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white font-mono text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 resize-y min-h-[80px]"
                             required
-                        >
+                        >${escapeHtmlContent(project.command)}</textarea>
                     </div>
                 </div>
                 
