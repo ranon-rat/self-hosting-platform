@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/ranon-rat/self-hosting-manager/src/domain"
 	"github.com/ranon-rat/self-hosting-manager/src/domain/executioner"
@@ -175,6 +176,7 @@ func Executioner(project *projectsD.Project) {
 			log.Println("Port already in use, not restarting", project.Name)
 			goto justClean
 		}
+		time.Sleep(1 * time.Second)
 		RestartProject(project.ID)
 		return
 		// the just clean part is to avoid getting inside an infite loop
