@@ -19,7 +19,7 @@ import (
 )
 
 var runningProjects = domain.NewSecureMap[int, *executioner.RunningProject]()
-var OutputChannels = domain.NewSecureMap[int, *domain.SecureChanneling[string]]()
+var OutputChannels = domain.NewSecureMap[int, *domain.SafeChan[string]]()
 var deletingAll atomic.Bool
 
 // this is for starting the services that are stored in our database
@@ -121,7 +121,7 @@ func Executioner(project *projectsD.Project) {
 	channel, exists := OutputChannels.Get(project.ID)
 	if !exists {
 		// since i am closing the channel, this allows me to avoid any weird behaviour
-		channel = domain.NewSecureChanneling[string](executioner.MAX_CHANNEL_BUFFER)
+		channel = domain.NewSafeChan[string](executioner.MAX_CHANNEL_BUFFER)
 		OutputChannels.Set(project.ID, channel)
 	}
 	// this is constantly being written and readed, so it uses a rwmutex
@@ -186,7 +186,7 @@ func Executioner(project *projectsD.Project) {
 		OutputChannels.Delete(project.ID)
 	}()
 }
-func OutReader(id int, name string, buf io.ReadCloser, channel *domain.SecureChanneling[string], lastErr *executioner.SecureErrContainer) {
+func OutReader(id int, name string, buf io.ReadCloser, channel *domain.SafeChan[string], lastErr *executioner.SecureErrContainer) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -205,7 +205,7 @@ func OutReader(id int, name string, buf io.ReadCloser, channel *domain.SecureCha
 	}
 }
 
-func ErrReader(id int, name string, buf io.ReadCloser, channel *domain.SecureChanneling[string], lastErr *executioner.SecureErrContainer) {
+func ErrReader(id int, name string, buf io.ReadCloser, channel *domain.SafeChan[string], lastErr *executioner.SecureErrContainer) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("Recovered from panic in ErrReader for %s: %v\n", name, r)
@@ -227,7 +227,7 @@ func ErrReader(id int, name string, buf io.ReadCloser, channel *domain.SecureCha
 
 	}
 }
-func SaveAndSend(channel *domain.SecureChanneling[string], output string, projectID int) {
+func SaveAndSend(channel *domain.SafeChan[string], output string, projectID int) {
 	logRepo.Create(&executionlogs.NewLog{
 		IdProject: projectID,
 		Content:   output,
