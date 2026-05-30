@@ -90,6 +90,9 @@ func Messager(id int) {
 		}
 
 		connections.Range(func(conn *websocket.Conn, _ bool) bool {
+			defer func() {
+				recover()
+			}()
 			if err := conn.WriteJSON(executionlogs.LogMessage{
 				Content:   out,
 				IDProject: id,
