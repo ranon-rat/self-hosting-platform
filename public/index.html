@@ -5,26 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Self Hosting Manager</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-    </style>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/index.css">
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900">
-    <div class="container mx-auto px-4 py-8">
-        <div class="flex items-center justify-between mb-8">
+<body>
+    <div class="container">
+        <div class="header-row">
             <div>
-                <h1 class="text-4xl font-bold text-white mb-2">Self Hosting Manager</h1>
+                <h1 class="title">Self Hosting Manager</h1>
             </div>
             <a href="/createproject.html">
-                <button 
+                <button
                     id="create-project-button"
-                    class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-indigo-500/50"
+                    class="btn btn-primary"
                 >
                     ➕ Create Project
                 </button>
@@ -35,8 +29,6 @@
         </div>
     </div>
     <script src="dist/loadprojects.js" type="module"></script>
-    <!--i want to have the map avaible-->
-    <script src="dist/loadprojects.d.ts.map"></script>
 </body>
 
 </html>

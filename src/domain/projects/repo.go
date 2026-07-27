@@ -7,4 +7,7 @@ type ProjectsRepoDB interface {
 
 	GetByID(id int) (*Project, error)
 	Search(search string) ([]Project, error)
+
+	//
+	Delete(id int) error
 }

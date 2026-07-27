@@ -1,6 +1,8 @@
 package projectsC
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	projectsD "github.com/ranon-rat/self-hosting-manager/src/domain/projects"
 	executionerServices "github.com/ranon-rat/self-hosting-manager/src/services/executioner"
@@ -97,4 +99,26 @@ func SearchProject(c *fiber.Ctx) error {
 		})
 	}
 	return c.Status(200).JSON(projects)
+}
+
+// DELETE /projects?id=id
+func DeleteProject(c *fiber.Ctx) error {
+	id := c.QueryInt("id")
+	fmt.Println("deleting project", id)
+
+	// first stop the running process and close its log channel,
+	// then remove it from the database
+	if err := executionerServices.DeleteProject(id); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	if err := pRepo.Delete(id); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.JSON(fiber.Map{
+		"message": "project deleted",
+	})
 }

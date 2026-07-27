@@ -87,3 +87,11 @@ func (p Repository) PauseProject(pause bool, id int) error {
 	_, err := p.DB.Exec(query, pause, id)
 	return err
 }
+
+func (p Repository) Delete(id int) error {
+	query := `
+	DELETE FROM project WHERE id=?1
+	`
+	_, err := p.DB.Exec(query, id)
+	return err
+}

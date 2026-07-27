@@ -1,0 +1,300 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --color-white: #ffffff;
+    --color-slate-300: #cbd5e1;
+    --color-slate-400: #94a3b8;
+    --color-slate-500: #64748b;
+    --color-indigo-300: #a5b4fc;
+    --color-indigo-400: #818cf8;
+    --color-indigo-500: #6366f1;
+    --color-purple-300: #d8b4fe;
+    --color-purple-400: #c084fc;
+    --color-purple-500: #a855f7;
+    --color-red-200: #fecaca;
+    --color-red-400: #f87171;
+    --color-green-300: #86efac;
+    --color-green-400: #4ade80;
+    --color-yellow-300: #fde047;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(to bottom right, #0f172a, #312e81, #0f172a);
+}
+
+/* layout */
+.container {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.center-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* surfaces */
+.card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    padding: 2rem;
+}
+
+/* typography */
+.title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--color-white);
+    margin: 0 0 0.5rem;
+}
+
+.subtitle {
+    color: var(--color-slate-400);
+    margin: 0;
+}
+
+.mono {
+    font-family: monospace;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.text-xs {
+    font-size: 0.75rem;
+}
+
+/* buttons */
+.btn {
+    display: inline-block;
+    width: auto;
+    border: none;
+    cursor: pointer;
+    color: var(--color-white);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    transform: scale(1.02);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-primary {
+    background: linear-gradient(to right, #4f46e5, #9333ea);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(to right, #4338ca, #7e22ce);
+    box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.5);
+}
+
+.btn-blue {
+    background: linear-gradient(to right, #2563eb, #4f46e5);
+}
+
+.btn-blue:hover {
+    background: linear-gradient(to right, #1d4ed8, #4338ca);
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.5);
+}
+
+.btn-warning {
+    background: linear-gradient(to right, #ca8a04, #ea580c);
+}
+
+.btn-warning:hover {
+    background: linear-gradient(to right, #a16207, #c2410c);
+    box-shadow: 0 10px 15px -3px rgba(234, 179, 8, 0.5);
+}
+
+.btn-success {
+    background: linear-gradient(to right, #16a34a, #059669);
+}
+
+.btn-success:hover {
+    background: linear-gradient(to right, #15803d, #047857);
+    box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.5);
+}
+
+.btn-danger {
+    background: linear-gradient(to right, #dc2626, #e11d48);
+}
+
+.btn-danger:hover {
+    background: linear-gradient(to right, #b91c1c, #be123c);
+    box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.5);
+}
+
+.btn-secondary {
+    background: rgba(51, 65, 85, 0.5);
+    box-shadow: none;
+}
+
+.btn-secondary:hover {
+    background: #334155;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* badges */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-running {
+    background: rgba(34, 197, 94, 0.2);
+    color: var(--color-green-300);
+    border: 1px solid rgba(34, 197, 94, 0.5);
+}
+
+.badge-paused {
+    background: rgba(234, 179, 8, 0.2);
+    color: var(--color-yellow-300);
+    border: 1px solid rgba(234, 179, 8, 0.5);
+}
+
+/* forms */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.field label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-slate-300);
+}
+
+.input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: var(--color-white);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.input::placeholder {
+    color: var(--color-slate-400);
+}
+
+.input:focus {
+    outline: none;
+    border-color: transparent;
+    box-shadow: 0 0 0 2px var(--color-indigo-500);
+}
+
+textarea.input {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* value display box (read-only fields) */
+.value-box {
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    color: var(--color-white);
+    font-size: 0.875rem;
+    word-break: break-all;
+}
+
+/* links */
+.link {
+    color: var(--color-indigo-400);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.link:hover {
+    color: var(--color-indigo-300);
+}
+
+/* feedback states */
+.state-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.state-box-inner {
+    text-align: center;
+}
+
+.spinner {
+    display: inline-block;
+    width: 3rem;
+    height: 3rem;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-top-color: var(--color-purple-500);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.error-box {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    color: var(--color-red-200);
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    max-width: 28rem;
+    text-align: center;
+}

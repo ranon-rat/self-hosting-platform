@@ -31,6 +31,9 @@ func (sc *SafeChan[T]) Close() {
 	})
 }
 
+func (sc *SafeChan[T]) IsClosed() bool {
+	return sc.closed.Load()
+}
 func (sc *SafeChan[T]) Send(v T) (ok bool) {
 	ok = true
 	defer func() {

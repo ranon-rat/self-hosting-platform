@@ -1,0 +1,100 @@
+/* project.html — project details, edit form and logs */
+
+.back-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.details-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .details-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.details-thumb {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: rgba(30, 41, 59, 0.5);
+}
+
+.details-thumb img {
+    width: 100%;
+    height: 16rem;
+    object-fit: cover;
+}
+
+.buttons-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.buttons-row .btn-grow {
+    flex: 1;
+}
+
+.logs-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.logs-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-white);
+    margin: 0;
+}
+
+.logs-container {
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    font-family: monospace;
+    font-size: 0.875rem;
+    color: var(--color-green-400);
+    max-height: 24rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+}
+
+.log-entry {
+    border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+    padding-bottom: 0.25rem;
+    word-break: break-all;
+}
+
+.log-timestamp {
+    color: var(--color-slate-500);
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+}
+
+.log-content {
+    color: var(--color-green-400);
+}
+
+.stack > * + * {
+    margin-top: 1.5rem;
+}

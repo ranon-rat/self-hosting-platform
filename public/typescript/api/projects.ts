@@ -17,3 +17,6 @@ export async function GetProjectById(id: number) {
 export async function SearchProjects(search: string) {
     return baseAPI<Project[]>("/projects?search=" + search, "GET")
 }
+export async function DeleteProject(id: number) {
+    return baseAPI<{message: string}>("/projects?id=" + id, "DELETE")
+}

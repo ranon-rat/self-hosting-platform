@@ -16,4 +16,5 @@ func Setup(app *fiber.App, repos *repositories.Repositories) {
 	group.Put("/pause", PauseProject)
 	group.Get("/by-id", GetByID)
 	group.Get("/", SearchProject)
+	group.Delete("/", DeleteProject)
 }

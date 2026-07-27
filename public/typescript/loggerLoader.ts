@@ -15,9 +15,9 @@ function escapeHtml(text: string): string {
 function renderLog(log: Logs): string {
     const timestamp = formatDate(log.created_at)
     return `
-        <div class="border-b border-slate-700/50 pb-1">
-            <span class="text-slate-500 text-xs">[${timestamp}]</span>
-            <span class="text-green-400">${escapeHtml(log.content)}</span>
+        <div class="log-entry">
+            <span class="log-timestamp">[${timestamp}]</span>
+            <span class="log-content">${escapeHtml(log.content)}</span>
         </div>
     `
 }
@@ -77,9 +77,9 @@ function renderRealtimeLog(logMessage: LogMessage) {
     
     // Add new log at the bottom
     const logHtml = `
-        <div class="border-b border-slate-700/50 pb-1">
-            <span class="text-slate-500 text-xs">[${formatDate(new Date().toISOString())}]</span>
-            <span class="text-green-400">${escapeHtml(logMessage.content)}</span>
+        <div class="log-entry">
+            <span class="log-timestamp">[${formatDate(new Date().toISOString())}]</span>
+            <span class="log-content">${escapeHtml(logMessage.content)}</span>
         </div>
     `
     container.innerHTML += logHtml

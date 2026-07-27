@@ -57,6 +57,8 @@ func WebsocketConn(c *websocket.Conn) {
 	connections.Set(c, true)
 	defer connections.Delete(c)
 	for {
+		// maybe i could just avoid this?
+		// uhh
 		// aqui me da igual esto
 		if _, _, err := c.ReadMessage(); err != nil {
 			log.Println("read:", err)
@@ -88,6 +90,7 @@ func Messager(id int) {
 		if !exist {
 			return false
 		}
+		// i think i am not managing the channel if its closed
 
 		connections.Range(func(conn *websocket.Conn, _ bool) bool {
 			defer func() {
@@ -104,4 +107,7 @@ func Messager(id int) {
 		})
 		return true
 	})
+	if channel.IsClosed() {
+		CloseAll(id)
+	}
 }

@@ -4,82 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Project - Self Hosting Manager</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-    </style>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/form.css">
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 flex items-center justify-center p-4">
-    <div class="w-full max-w-2xl">
-        <div class="bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-8 space-y-6">
-            <div class="text-center space-y-2">
-                <h1 class="text-3xl font-bold text-white">Create New Project</h1>
-                <p class="text-slate-300 text-sm">Fill in the details to create a new project</p>
+<body class="center-page">
+    <div class="form-wrapper form-wrapper-wide">
+        <div class="card">
+            <div class="form-header">
+                <h1>Create New Project</h1>
+                <p>Fill in the details to create a new project</p>
             </div>
-            
-            <form id="create-project-form" class="space-y-4">
-                <div class="space-y-2">
-                    <label for="name" class="block text-sm font-medium text-slate-300">Project Name</label>
-                    <input 
-                        type="text" 
-                        name="name" 
+
+            <form id="create-project-form" class="form-fields">
+                <div class="field">
+                    <label for="name">Project Name</label>
+                    <input
+                        type="text"
+                        name="name"
                         id="name"
                         placeholder="My Awesome Project"
-                        class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        class="input"
                         required
                     >
                 </div>
-                
-                <div class="space-y-2">
-                    <label for="dir" class="block text-sm font-medium text-slate-300">Directory Path</label>
-                    <input 
-                        type="text" 
-                        name="dir" 
+
+                <div class="field">
+                    <label for="dir">Directory Path</label>
+                    <input
+                        type="text"
+                        name="dir"
                         id="dir"
                         placeholder="/path/to/project"
-                        class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        class="input"
                         required
                     >
                 </div>
-                
-                <div class="space-y-2">
-                    <label for="command" class="block text-sm font-medium text-slate-300">Command</label>
-                    <input 
-                        type="text" 
-                        name="command" 
+
+                <div class="field">
+                    <label for="command">Command</label>
+                    <input
+                        type="text"
+                        name="command"
                         id="command"
                         placeholder="npm start"
-                        class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        class="input"
                         required
                     >
                 </div>
-                
-                <div class="space-y-2">
-                    <label for="thumbnail_url" class="block text-sm font-medium text-slate-300">Thumbnail URL</label>
-                    <input 
-                        type="url" 
-                        name="thumbnail_url" 
+
+                <div class="field">
+                    <label for="thumbnail_url">Thumbnail URL</label>
+                    <input
+                        type="url"
+                        name="thumbnail_url"
                         id="thumbnail_url"
                         placeholder="https://example.com/thumbnail.png"
-                        class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        class="input"
                     >
                 </div>
-                
-                <div class="flex gap-4 pt-4">
-                    <a href="/index.html" class="flex-1">
-                        <button 
+
+                <div class="form-actions">
+                    <a href="/index.html">
+                        <button
                             type="button"
-                            class="w-full bg-slate-700/50 hover:bg-slate-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                            class="btn btn-secondary"
                         >
                             Cancel
                         </button>
                     </a>
-                    <button 
+                    <button
                         type="submit"
-                        class="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-indigo-500/50"
+                        class="btn btn-primary"
                     >
                         Create Project
                     </button>
@@ -89,6 +84,5 @@
     </div>
 
     <script src="dist/createproject.js" type="module"></script>
-    <script src="dist/createproject.d.ts.map"></script>
 </body>
 </html>

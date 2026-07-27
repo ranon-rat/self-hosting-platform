@@ -1,0 +1,53 @@
+/* login.html / createproject.html — centered forms */
+
+.form-wrapper {
+    width: 100%;
+    max-width: 28rem;
+}
+
+.form-wrapper-wide {
+    max-width: 42rem;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.form-header h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--color-white);
+    margin: 0 0 0.5rem;
+}
+
+.form-header p {
+    color: var(--color-slate-300);
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1rem;
+}
+
+.form-actions .btn,
+.form-actions a {
+    flex: 1;
+}
+
+.form-actions a {
+    display: flex;
+}
+
+.form-actions a .btn {
+    width: 100%;
+}

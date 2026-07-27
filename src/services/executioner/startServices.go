@@ -40,6 +40,16 @@ func StartServices() {
 	}
 
 }
+func DeleteProject(id int) error {
+	StopProject(id)
+	runningProjects.Delete(id)
+	output, exist := OutputChannels.Get(id)
+	if !exist {
+		return nil
+	}
+	output.Close()
+	return nil
+}
 
 // this stops the project directly
 func StopProject(id int) error {
