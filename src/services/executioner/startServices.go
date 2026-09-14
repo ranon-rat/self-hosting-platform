@@ -200,7 +200,9 @@ func OutReader(id int, name string, buf io.ReadCloser, channel *domain.SafeChan[
 
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Printf("Recovered from panic in ErrReader for %s: %v\n", name, r)
+			output := fmt.Sprintf("Recovered from panic in ErrReader for %s: %v", name, r)
+			lastErr.AppendValue(output)
+			SaveAndSend(channel, output, id)
 		}
 	}()
 	scanner := bufio.NewScanner(buf)
@@ -212,6 +214,9 @@ func OutReader(id int, name string, buf io.ReadCloser, channel *domain.SafeChan[
 		// here i am just notifying that i came from the stdout
 		lastErr.FromStdout()
 
+	}
+	if err := scanner.Err(); err != nil {
+		log.Printf("error reading stdout for %s: %v", name, err)
 	}
 }
 
@@ -235,6 +240,9 @@ func ErrReader(id int, name string, buf io.ReadCloser, channel *domain.SafeChan[
 
 		// i just want to know what is happening this is for testing
 
+	}
+	if err := scanner.Err(); err != nil {
+		log.Printf("error reading stderr for %s: %v", name, err)
 	}
 }
 func SaveAndSend(channel *domain.SafeChan[string], output string, projectID int) {
